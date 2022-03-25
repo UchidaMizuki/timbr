@@ -1,5 +1,20 @@
-#' mutate
+#' dplyr methods for forest objects
 #'
+#' dplyr methods for forest objects.
+#'
+#' @param .data A forest.
+#' @param ... Other arguments.
+#' @param .node `NULL` (default) or a vector to create new nodes.
+#' @param x A forest.
+#' @param y A data frame.
+#' @param by An unnamed character vector giving the key columns.
+#'
+#' @return A forest.
+#'
+#' @name dplyr
+NULL
+
+#' @rdname dplyr
 #' @importFrom dplyr mutate
 #' @export
 mutate.forest <- function(.data, ...) {
@@ -28,12 +43,10 @@ mutate.forest <- function(.data, ...) {
   .data
 }
 
-#' summarise
-#'
+#' @rdname dplyr
 #' @importFrom dplyr summarise
 #' @export
 summarise.forest <- function(.data, ...,
-                             .groups = NULL,
                              .node = NULL) {
   roots <- .data$roots
   nodes <- .data$nodes
@@ -97,12 +110,14 @@ summarise.forest <- function(.data, ...,
   forest(new_roots, new_nodes)
 }
 
+#' @rdname dplyr
 #' @importFrom dplyr select
 #' @export
 select.forest <- function(.data, ...) {
   modify_nodes(select)(.data, ...)
 }
 
+#' @rdname dplyr
 #' @importFrom dplyr relocate
 #' @export
 relocate.forest <- function(.data, ...) {
@@ -122,23 +137,21 @@ modify_nodes <- function(f) {
   }
 }
 
+#' @rdname dplyr
 #' @importFrom dplyr rows_update
 #' @export
 rows_update.forest <- function(x, y,
-                               by = NULL, ...,
-                               copy = FALSE,
-                               in_place = FALSE) {
+                               by = NULL, ...) {
   rows_update_forest(x, y,
                      by = by,
                      patch = FALSE)
 }
 
+#' @rdname dplyr
 #' @importFrom dplyr rows_patch
 #' @export
 rows_patch.forest <- function(x, y,
-                               by = NULL, ...,
-                               copy = FALSE,
-                               in_place = FALSE) {
+                               by = NULL, ...) {
   rows_update_forest(x, y,
                      by = by,
                      patch = TRUE)
