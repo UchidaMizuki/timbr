@@ -22,6 +22,7 @@ Imports:
     purrr,
     rlang,
     tibble,
+    tidygraph,
     tidyselect,
     vctrs
 Suggests: 
