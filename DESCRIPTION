@@ -31,5 +31,6 @@ Suggests:
     testthat (>= 3.0.0),
     tidyr
 Config/testthat/edition: 3
-URL: https://github.com/UchidaMizuki/timbr
+URL: https://github.com/UchidaMizuki/timbr,
+    https://uchidamizuki.github.io/timbr/
 BugReports: https://github.com/UchidaMizuki/timbr/issues
