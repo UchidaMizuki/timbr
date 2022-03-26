@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![CRAN
+status](https://www.r-pkg.org/badges/version/timbr)](https://CRAN.R-project.org/package=timbr)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/UchidaMizuki/timbr/workflows/R-CMD-check/badge.svg)](https://github.com/UchidaMizuki/timbr/actions)
@@ -22,6 +24,10 @@ You can install the development version of timbr from
 [GitHub](https://github.com/) with:
 
 ``` r
+# the released version from CRAN:
+install.packages("timbr")
+
+# the development version from GitHub:
 # install.packages("devtools")
 devtools::install_github("UchidaMizuki/timbr")
 ```
