@@ -101,8 +101,8 @@ rbind.forest <- function(..., deparse.level = 1) {
   }
 
   new_roots <- rbind_check(!!!new_roots)
-  new_roots <- cbind_check(drop_node(new_roots),
-                           node = new_roots$node)
+  loc <- which(names(new_roots) == "node")
+  new_roots <- new_roots[c(vec_as_location(-loc, ncol(new_roots)), loc)]
 
   new_nodes <- rbind_check(!!!new_nodes)
   stopifnot(
