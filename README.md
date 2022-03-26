@@ -7,12 +7,14 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![R-CMD-check](https://github.com/UchidaMizuki/timbr/workflows/R-CMD-check/badge.svg)](https://github.com/UchidaMizuki/timbr/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/UchidaMizuki/timbr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/UchidaMizuki/timbr?branch=main)
-[![R-CMD-check](https://github.com/UchidaMizuki/timbr/workflows/R-CMD-check/badge.svg)](https://github.com/UchidaMizuki/timbr/actions)
 <!-- badges: end -->
 
-The goal of timbr is to …
+timbr provides data frames for forest (or tree) data structures. You can
+create forest data structures from data frames and process them based on
+their hierarchies.
 
 ## Installation
 
@@ -24,38 +26,77 @@ You can install the development version of timbr from
 devtools::install_github("UchidaMizuki/timbr")
 ```
 
-## Example
+## tidyverse methods
 
-This is a basic example which shows you how to solve a common problem:
+-   `mutate()`
+-   `summarise()`
+-   `select()` and `relocate()`
+-   `rows_update()` and `rows_patch()`
+
+## Examples
 
 ``` r
 library(timbr)
-## basic example code
+library(dplyr)
 ```
-
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+fr <- tidyr::expand_grid(key1 = letters[1:2],
+                         key2 = letters[1:2],
+                         key3 = letters[1:2]) %>% 
+  mutate(value = row_number()) %>% 
+  forest_by(key1, key2, key3)
+
+fr
+#> # A forest: 8 nodes and 1 feature
+#> # Groups:   key1, key2 [4]
+#> # Roots:    key3 [8]
+#>   key1  key2  node     value
+#>   <chr> <chr> <node>   <int>
+#> 1 a     a     <key3> a     1
+#> 2 a     a     <key3> b     2
+#> 3 a     b     <key3> a     3
+#> 4 a     b     <key3> b     4
+#> 5 b     a     <key3> a     5
+#> 6 b     a     <key3> b     6
+#> 7 b     b     <key3> a     7
+#> 8 b     b     <key3> b     8
+
+fr_sum <- fr %>% 
+  summarise(value = sum(value)) %>% 
+  summarise(value = sum(value))
+
+fr_sum
+#> # A forest: 14 nodes and 1 feature
+#> # Roots:    key1 [2]
+#>   node     value
+#>   <node>   <int>
+#> 1 <key1> a    10
+#> 2 <key1> b    26
+
+children(fr_sum)
+#> # A forest: 12 nodes and 1 feature
+#> # Groups:   key1 [2]
+#> # Roots:    key2 [4]
+#>   key1  node     value
+#>   <chr> <node>   <int>
+#> 1 a     <key2> a     3
+#> 2 a     <key2> b     7
+#> 3 b     <key2> a    11
+#> 4 b     <key2> b    15
+
+fr_sum %>% 
+  climb(key3)
+#> # A forest: 8 nodes and 1 feature
+#> # Roots:    key3 [8]
+#>   node     value
+#>   <node>   <int>
+#> 1 <key3> a     1
+#> 2 <key3> b     2
+#> 3 <key3> a     3
+#> 4 <key3> b     4
+#> 5 <key3> a     5
+#> 6 <key3> b     6
+#> 7 <key3> a     7
+#> 8 <key3> b     8
 ```
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this. You could also
-use GitHub Actions to re-render `README.Rmd` every time you push. An
-example workflow can be found here:
-<https://github.com/r-lib/actions/tree/v1/examples>.
-
-You can also embed plots, for example:
-
-<img src="man/figures/README-pressure-1.png" width="100%" />
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
