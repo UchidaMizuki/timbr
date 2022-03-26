@@ -1,3 +1,14 @@
+#' Modify a forest hierarchically
+#'
+#' Modifies nodes of a forest in the climbing or descending direction.
+#'
+#' @param .x A forest
+#' @param .f A function, formula, or vector (not necessarily atomic).
+#' @param ... Additional arguments passed on to the mapped function.
+#' @param .climb Climbing or descending?
+#'
+#' @return A forest.
+#'
 #' @importFrom purrr modify
 #' @export
 modify.forest <- function(.x, .f, ..., .climb = FALSE) {
