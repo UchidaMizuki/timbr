@@ -39,5 +39,5 @@
 A forest.
 }
 \description{
-dplyr methods for forest objects
+dplyr methods for forest objects.
 }

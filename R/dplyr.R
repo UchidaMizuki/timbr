@@ -81,7 +81,7 @@ summarise.forest <- function(.data, ...,
   # nodes
   # set parents
   vec_slice(nodes$node$parent, roots$node) <- vec_unchop(vec_chop(new_root_nodes),
-                                                         group_rows(roots))
+                                                         dplyr::group_rows(roots))
 
   # new nodes
   if (is.null(.node)) {

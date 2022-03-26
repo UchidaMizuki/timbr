@@ -14,9 +14,11 @@ as_forest(x, ...)
 }
 \arguments{
 \item{x}{An object.}
+
+\item{...}{Unused, for extensibility.}
 }
 \value{
-A `forest` object.
+A forest.
 }
 \description{
 Coerce to a forest

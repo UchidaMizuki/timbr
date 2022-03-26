@@ -10,7 +10,7 @@ is_forest(x)
 \item{x}{An object.}
 }
 \value{
-`TRUE` if an object inherits from class `forest`.
+`TRUE` if an object inherits from `forest` class.
 }
 \description{
 Test if an object is a forest

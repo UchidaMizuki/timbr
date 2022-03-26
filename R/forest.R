@@ -8,7 +8,7 @@ forest <- function(roots, nodes) {
 #'
 #' @param x An object.
 #'
-#' @return `TRUE` if an object inherits from class `forest`.
+#' @return `TRUE` if an object inherits from `forest` class.
 #'
 #' @export
 is_forest <- function(x) {
@@ -18,8 +18,9 @@ is_forest <- function(x) {
 #' Coerce to a forest
 #'
 #' @param x An object.
+#' @param ... Unused, for extensibility.
 #'
-#' @return A `forest` object.
+#' @return A forest.
 #'
 #' @export
 as_forest <- function(x, ...) {
@@ -62,6 +63,15 @@ as_forest.grouped_df <- function(x, ...) {
   as_forest.rowwise_df(x, ...)
 }
 
+#' Constructs a forest by one or more variables
+#'
+#' `forest_by()` constructs a forest by one or more variables.
+#'
+#' @param .data A data frame.
+#' @param ... Variables.
+#'
+#' @return A forest.
+#'
 #' @export
 forest_by <- function(.data, ...) {
   as_forest(dplyr::rowwise(.data, ...))
@@ -274,12 +284,6 @@ group_data.forest <- function(.data) {
 #' @export
 group_keys.forest <- function(.tbl, ...) {
   modify_roots(group_keys)(.tbl, ...)
-}
-
-#' @importFrom dplyr group_rows
-#' @export
-group_rows.forest <- function(.data) {
-  modify_roots(group_rows)(.data)
 }
 
 #' @importFrom dplyr group_indices
