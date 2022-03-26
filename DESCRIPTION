@@ -9,8 +9,9 @@ Authors@R:
         email = "uchidamizuki@vivaldi.net", 
         role = c("aut", "cre")
     )
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Provides data frames for forest (or tree) data structures. You can 
+    create forest data structures from data frames and process them based on 
+    their hierarchies.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -27,7 +28,8 @@ Imports:
     vctrs
 Suggests: 
     covr,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    tidyr
 Config/testthat/edition: 3
 URL: https://github.com/UchidaMizuki/timbr
 BugReports: https://github.com/UchidaMizuki/timbr/issues
