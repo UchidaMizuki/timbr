@@ -117,6 +117,16 @@ rbind.forest <- function(..., deparse.level = 1) {
 
 # Verbs -------------------------------------------------------------------
 
+#' Children of the forest
+#'
+#' Convert a forest into a forest consisting of its child nodes.
+#'
+#' @param data A forest.
+#' @param name `NULL` (default) or a scalar character specifying the node name
+#' of child nodes.
+#'
+#' @return A forest.
+#'
 #' @export
 children <- function(data,
                      name = NULL) {
@@ -172,6 +182,16 @@ timbr_children <- function(data,
   forest(new_roots, new_nodes)
 }
 
+#' Climb a forest from parents to children
+#'
+#' Climb a forest from parents to children with one or more node names.
+#'
+#' @param .data A forest.
+#' @param ... A list of node names to climb the forest.
+#' @param .deep Whether to search deeply for node names or not?
+#'
+#' @return A forest.
+#'
 #' @export
 climb <- function(.data, ...,
                   .deep = TRUE) {
