@@ -35,10 +35,13 @@ devtools::install_github("UchidaMizuki/timbr")
 
 ## tidyverse methods
 
+timbr provides some tidyverse methods as follows,
+
 - `mutate()`
 - `summarise()`
 - `select()` and `relocate()`
 - `rows_update()` and `rows_patch()`
+- `modify()`
 
 ## Examples
 
