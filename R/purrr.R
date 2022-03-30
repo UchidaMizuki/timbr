@@ -46,9 +46,12 @@ modify.forest <- function(.x, .f, ..., .climb = FALSE) {
 
     new_node_data <- vec_init(list_of(.ptype = node_data), size_rle)
 
+    if (.climb) {
+      rle_locs <- rev(rle_locs)
+    }
+
     for (j in rle_locs) {
       if (.climb) {
-        j <- size_rle - j + 1L
         new_node_data[[j]] <- .f(children[[j]], parents[[j]])
       } else {
         new_node_data[[j]] <- .f(parents[[j]], children[[j]])
