@@ -24,7 +24,7 @@ mutate.forest <- function(.data, ...) {
   grp_vars <- group_vars(roots)
 
   node_data <- drop_node(nodes)
-  root_node_data <- vec_slice(node_data, roots$node)
+  root_node_data <- vec_slice(node_data, roots$.)
   root_node_data <- cbind_check(roots[grp_vars],
                                 root_node_data)
   root_node_data <- dplyr::new_grouped_df(root_node_data, group_data(roots))
@@ -36,9 +36,9 @@ mutate.forest <- function(.data, ...) {
                                vec_init(drop_cols(new_root_node_data, names(node_data))))
   new_node_data <- new_node_data[names(new_root_node_data)]
 
-  vec_slice(new_node_data, roots$node) <- new_root_node_data
+  vec_slice(new_node_data, roots$.) <- new_root_node_data
 
-  .data$nodes <- cbind_check(node = nodes$node,
+  .data$nodes <- cbind_check(. = nodes$.,
                              new_node_data)
   .data
 }
@@ -57,7 +57,7 @@ summarise.forest <- function(.data, ...,
     }
 
     stopifnot(
-      !names(.node) %in% c(names(roots), nodes$node$name)
+      !names(.node) %in% c(names(roots), nodes$.$name)
     )
   }
 
@@ -70,17 +70,17 @@ summarise.forest <- function(.data, ...,
 
   if (is.null(.node)) {
     new_roots <- cbind_check(grp_keys[-ncol_grp_keys],
-                             node = new_root_nodes)
+                             . = new_root_nodes)
     new_roots <- dplyr::grouped_df(new_roots, grp_vars[-ncol_grp_keys])
   } else {
     new_roots <- cbind_check(grp_keys,
-                             node = new_root_nodes)
+                             . = new_root_nodes)
     new_roots <- dplyr::grouped_df(new_roots, grp_vars)
   }
 
   # nodes
   # set parents
-  vec_slice(nodes$node$parent, roots$node) <- vec_unchop(vec_chop(new_root_nodes),
+  vec_slice(nodes$.$parent, roots$.) <- vec_unchop(vec_chop(new_root_nodes),
                                                          dplyr::group_rows(roots))
 
   # new nodes
@@ -95,14 +95,14 @@ summarise.forest <- function(.data, ...,
   }
 
   # summarise
-  root_node_data <- vec_slice(drop_node(nodes), roots$node)
+  root_node_data <- vec_slice(drop_node(nodes), roots$.)
   root_node_data <- cbind_check(roots[grp_vars], root_node_data)
   root_node_data <- dplyr::new_grouped_df(root_node_data, group_data(roots))
 
   new_root_node_data <- summarise(root_node_data, ...,
                                   .groups = "drop")
 
-  new_root_nodes <- cbind_check(node = new_root_nodes,
+  new_root_nodes <- cbind_check(. = new_root_nodes,
                                 drop_cols(new_root_node_data, grp_vars))
   new_nodes <- rbind_check(nodes,
                            new_root_nodes)
@@ -131,7 +131,7 @@ modify_nodes <- function(f) {
     node_data <- drop_node(nodes)
     new_node_data <- f(node_data, ...)
 
-    x$nodes <- cbind_check(node = nodes$node,
+    x$nodes <- cbind_check(. = nodes$.,
                            new_node_data)
     x
   }
@@ -168,7 +168,7 @@ rows_update_forest <- function(x, y, by, patch) {
 
   # roots
   roots <- x$roots
-  root_nodes <- roots$node
+  root_nodes <- roots$.
   grps <- vec_group_loc(as.data.frame(y_roots))
 
   y_locs <- vec_slice(grps$loc,
@@ -176,7 +176,7 @@ rows_update_forest <- function(x, y, by, patch) {
 
   # nodes
   nodes <- x$nodes
-  locs <- timbr_match(nodes$node, root_nodes, y_nodes, y_locs)
+  locs <- timbr_match(nodes$., root_nodes, y_nodes, y_locs)
 
   # new_data
   new_data <- vec_slice(y, locs$haystacks)
@@ -196,7 +196,7 @@ rows_update_forest <- function(x, y, by, patch) {
 timbr_common_by <- function(by = NULL,
                             x, y) {
   x_root_names <- names(drop_node(x$roots))
-  x_node_names <- rev(vec_unique(x$nodes$node$name))
+  x_node_names <- rev(vec_unique(x$nodes$.$name))
 
   y_names <- names(y)
 

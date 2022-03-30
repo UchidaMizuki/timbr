@@ -23,7 +23,7 @@ test_that("dplyr", {
   fr_sum1 <- fr_sum %>%
     mutate(value1 = value + 1)
 
-  loc <- fr_sum1$roots$node
+  loc <- fr_sum1$roots$.
   expect_equal(vec_slice(fr_sum1$nodes$value1, loc),
                vec_slice(fr_sum1$nodes$value + 1, loc))
   expect_true(all(is.na(vec_slice(fr_sum1$nodes$value1,
@@ -35,7 +35,7 @@ test_that("dplyr", {
   fr_sum2 <- fr_sum1 %>%
     relocate(value1)
   expect_equal(colnames(fr_sum2$nodes),
-               c("node", "value1", "value"))
+               c(".", "value1", "value"))
 
   df <- fr %>%
     as_tibble() %>%

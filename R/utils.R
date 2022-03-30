@@ -20,7 +20,7 @@ drop_cols <- function(x, cols) {
 }
 
 drop_node <- function(x) {
-  drop_cols(x, "node")
+  drop_cols(x, ".")
 }
 
 cbind_check <- function(...) {

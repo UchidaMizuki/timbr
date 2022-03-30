@@ -44,14 +44,14 @@ as_forest.rowwise_df <- function(x, ...) {
   # roots
   size_grp_vars <- vec_size(grp_vars)
   roots <- cbind_check(grps[-size_grp_vars],
-                       node = vec_seq_along(x))
+                       . = vec_seq_along(x))
   roots <- dplyr::grouped_df(roots, grp_vars[-size_grp_vars])
 
   # nodes
   node <- tibble::new_tibble(df_list(name = grp_vars[[size_grp_vars]],
                                      value = grps[[size_grp_vars]],
                                      parent = NA_integer_))
-  nodes <- cbind_check(node = node,
+  nodes <- cbind_check(. = node,
                        x)
 
   forest(roots, nodes)
@@ -91,17 +91,17 @@ rbind.forest <- function(..., deparse.level = 1) {
     roots <- fr$roots
     nodes <- fr$nodes
 
-    roots$node <- roots$node + size_nodes
+    roots$. <- roots$. + size_nodes
     new_roots[[i]] <- roots
 
-    nodes$node$parent <- nodes$node$parent + size_nodes
+    nodes$.$parent <- nodes$.$parent + size_nodes
     new_nodes[[i]] <- nodes
 
     size_nodes <- size_nodes + vec_size(nodes)
   }
 
   new_roots <- rbind_check(!!!new_roots)
-  loc <- which(names(new_roots) == "node")
+  loc <- which(names(new_roots) == ".")
   new_roots <- new_roots[c(vec_as_location(-loc, ncol(new_roots)), loc)]
 
   new_nodes <- rbind_check(!!!new_nodes)
@@ -133,7 +133,7 @@ children <- function(data,
   name <- rlang::enquo(name)
 
   if (rlang::quo_is_null(name)) {
-    name <- vec_slice(data$nodes$node$name, data$roots$node)
+    name <- vec_slice(data$nodes$.$name, data$roots$.)
     name <- vec_unique(name)
     stopifnot(
       rlang::is_scalar_character(name)
@@ -155,28 +155,28 @@ timbr_children <- function(data,
 
   if (!is.null(name)) {
     new_root_keys <- cbind_check(new_root_keys,
-                                 !!name := vec_slice(nodes$node$value, roots$node))
+                                 !!name := vec_slice(nodes$.$value, roots$.))
   }
 
   # new_nodes
-  new_root_locs <- vec_in(nodes$node$parent, roots$node)
+  new_root_locs <- vec_in(nodes$.$parent, roots$.)
   new_root_nodes <- vec_slice(nodes, new_root_locs)
 
   new_root_keys <- vec_slice(new_root_keys,
-                             vec_match(new_root_nodes$node$parent, roots$node))
+                             vec_match(new_root_nodes$.$parent, roots$.))
 
-  new_root_nodes$node$parent <- NA_integer_
+  new_root_nodes$.$parent <- NA_integer_
   vec_slice(nodes, new_root_locs) <- new_root_nodes
 
-  node_locs <- vec_as_location(-roots$node, vec_size(nodes))
+  node_locs <- vec_as_location(-roots$., vec_size(nodes))
   new_nodes <- vec_slice(nodes, node_locs)
   new_node_locs <- vec_seq_along(new_nodes)
-  new_nodes$node$parent <- new_nodes$node$parent + new_node_locs - node_locs
+  new_nodes$.$parent <- new_nodes$.$parent + new_node_locs - node_locs
 
   # new_roots
   new_roots <- cbind_check(new_root_keys,
-                           node = vec_slice(new_node_locs,
-                                            is.na(new_nodes$node$parent)))
+                           . = vec_slice(new_node_locs,
+                                            is.na(new_nodes$.$parent)))
   new_roots <- dplyr::grouped_df(new_roots, names(new_root_keys))
 
   forest(new_roots, new_nodes)
@@ -205,8 +205,8 @@ climb <- function(.data, ...,
 
     if (.deep) {
       nodes <- .data$nodes
-      root_nodes <- vec_slice(nodes, .data$roots$node)
-      root_node_names <- vec_unique(root_nodes$node$name)
+      root_nodes <- vec_slice(nodes, .data$roots$.)
+      root_node_names <- vec_unique(root_nodes$.$name)
 
       frs <- vec_init_along(list(), root_node_names)
 
@@ -248,16 +248,16 @@ climb <- function(.data, ...,
 timbr_pull <- function(data, name) {
   roots <- data$roots
   nodes <- data$nodes
-  root_nodes <- vec_slice(nodes, roots$node)
+  root_nodes <- vec_slice(nodes, roots$.)
 
-  name <- tidyselect::vars_pull(vec_unique(root_nodes$node$name), name)
+  name <- tidyselect::vars_pull(vec_unique(root_nodes$.$name), name)
 
-  locs <- vec_equal(root_nodes$node$name, name,
+  locs <- vec_equal(root_nodes$.$name, name,
                     na_equal = TRUE)
   new_roots <- vec_slice(roots, locs)
-  new_root_nodes <- new_roots$node
+  new_root_nodes <- new_roots$.
 
-  grps <- vec_group_loc(nodes$node$parent)
+  grps <- vec_group_loc(nodes$.$parent)
   grps <- vec_slice(grps, !is.na(grps$key))
   grp_keys <- grps$key
 
@@ -276,12 +276,12 @@ timbr_pull <- function(data, name) {
   new_node_locs <- vec_seq_along(node_locs)
 
   new_nodes <- vec_slice(nodes, node_locs)
-  new_nodes$node$parent <- new_nodes$node$parent + new_node_locs - node_locs
+  new_nodes$.$parent <- new_nodes$.$parent + new_node_locs - node_locs
 
   # new_roots
   new_root_keys <- drop_node(new_roots)
   new_roots <- cbind_check(new_root_keys,
-                           node = vec_slice(new_node_locs, is.na(new_nodes$node$parent)))
+                           . = vec_slice(new_node_locs, is.na(new_nodes$.$parent)))
 
   if (dplyr::is_grouped_df(new_root_keys)) {
     new_roots <- dplyr::new_grouped_df(new_roots, group_data(new_root_keys))
@@ -351,7 +351,7 @@ format.forest <- function(x, ...) {
   roots <- x$roots
   nodes <- x$nodes
 
-  root_nodes <- vec_slice(nodes, roots$node)
+  root_nodes <- vec_slice(nodes, roots$.)
 
   if (dplyr::is_grouped_df(roots)) {
     group_sum <- tbl_sum(roots)[2]
@@ -360,7 +360,7 @@ format.forest <- function(x, ...) {
   }
 
   # roots
-  roots$node <- timbr_node(root_nodes$node$name, root_nodes$node$value)
+  roots$. <- timbr_node(root_nodes$.$name, root_nodes$.$value)
 
   root_nodes <- drop_node(root_nodes)
   roots <- cbind_check(roots,
@@ -379,7 +379,7 @@ tbl_sum.tbl_forest <- function(x) {
   size_nodes <- attr(x, "size_nodes")
   size_features <- attr(x, "size_features")
 
-  node_names <- field(x$node, "name")
+  node_names <- field(x$., "name")
   size_rle <- rle(node_names)$lengths
 
   c(`A forest` = paste(big_mark(size_nodes), plural("node", size_nodes), "and",

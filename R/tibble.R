@@ -8,9 +8,9 @@ as_tibble.forest <- function(x, ...,
   nodes <- x$nodes
 
   # nodes
-  root_nodes <- vec_slice(nodes, roots$node)
-  root_node_names <- vec_unique(root_nodes$node$name)
-  root_node_values <- root_nodes$node$value
+  root_nodes <- vec_slice(nodes, roots$.)
+  root_node_names <- vec_unique(root_nodes$.$name)
+  root_node_values <- root_nodes$.$value
   root_node_data <- drop_node(root_nodes)
   stopifnot(
     rlang::is_scalar_character(root_node_names)

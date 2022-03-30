@@ -15,8 +15,8 @@ modify.forest <- function(.x, .f, ..., .climb = FALSE) {
   .f <- purrr::as_mapper(.f, ...)
 
   nodes <- .x$nodes
-  node_names <- nodes$node$name
-  node_parents <- nodes$node$parent
+  node_names <- nodes$.$name
+  node_parents <- nodes$.$parent
   node_data <- drop_node(nodes)
 
   grps <- vec_group_loc(node_parents)
