@@ -15,5 +15,5 @@ as_tbl_graph.forest <- function(x,
   names(nodes)[names(nodes) == "."] <- node_key
 
   tidygraph::tbl_graph(nodes = nodes,
-                       edges = edges)
+                       edges = edges, ...)
 }
