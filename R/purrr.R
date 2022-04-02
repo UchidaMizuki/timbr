@@ -20,7 +20,7 @@ modify.forest <- function(.x, .f, ..., .climb = FALSE) {
   node_data <- drop_node(nodes)
 
   grps <- vec_group_loc(node_parents)
-  grps <- vec_slice(grps, !is.na(grps$key))
+  grps <- vec_slice(grps, !vec_equal_na(grps$key))
 
   sizes_rle <- rle(vec_slice(node_names, grps$key))$lengths
   inits_rle <- cumsum(sizes_rle) - sizes_rle
