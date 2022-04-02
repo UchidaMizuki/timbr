@@ -21,16 +21,15 @@ modify.forest <- function(.x, .f, ..., .climb = FALSE) {
 
   grps <- vec_group_loc(node_parents)
   grps <- vec_slice(grps, !vec_equal_na(grps$key))
+  grps <- vec_slice(grps,
+                    vec_order(grps$key,
+                              direction = if (.climb) "desc" else "asc"))
 
   rle <- vec_group_rle(vec_slice(node_names, grps$key))
   sizes_rle <- field(rle, "length")
   inits_rle <- cumsum(sizes_rle) - sizes_rle
 
   loc <- vec_seq_along(sizes_rle)
-
-  if (.climb) {
-    loc <- rev(loc)
-  }
 
   for (i in loc) {
     size_rle <- sizes_rle[[i]]
@@ -46,10 +45,6 @@ modify.forest <- function(.x, .f, ..., .climb = FALSE) {
     children <- vec_chop(node_data, grp_children)
 
     new_node_data <- vec_init(list_of(.ptype = node_data), size_rle)
-
-    if (.climb) {
-      rle_locs <- rev(rle_locs)
-    }
 
     for (j in rle_locs) {
       if (.climb) {
