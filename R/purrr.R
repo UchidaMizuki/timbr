@@ -22,7 +22,8 @@ modify.forest <- function(.x, .f, ..., .climb = FALSE) {
   grps <- vec_group_loc(node_parents)
   grps <- vec_slice(grps, !vec_equal_na(grps$key))
 
-  sizes_rle <- rle(vec_slice(node_names, grps$key))$lengths
+  rle <- vec_group_rle(vec_slice(node_names, grps$key))
+  sizes_rle <- field(rle, "length")
   inits_rle <- cumsum(sizes_rle) - sizes_rle
 
   loc <- vec_seq_along(sizes_rle)
