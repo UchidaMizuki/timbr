@@ -176,7 +176,7 @@ timbr_children <- function(data,
   # new_roots
   new_roots <- cbind_check(new_root_keys,
                            . = vec_slice(new_node_locs,
-                                            is.na(new_nodes$.$parent)))
+                                         is.na(new_nodes$.$parent)))
   new_roots <- dplyr::grouped_df(new_roots, names(new_root_keys))
 
   forest(new_roots, new_nodes)

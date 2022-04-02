@@ -81,7 +81,7 @@ summarise.forest <- function(.data, ...,
   # nodes
   # set parents
   vec_slice(nodes$.$parent, roots$.) <- vec_unchop(vec_chop(new_root_nodes),
-                                                         dplyr::group_rows(roots))
+                                                   dplyr::group_rows(roots))
 
   # new nodes
   if (is.null(.node)) {
@@ -151,7 +151,7 @@ rows_update.forest <- function(x, y,
 #' @importFrom dplyr rows_patch
 #' @export
 rows_patch.forest <- function(x, y,
-                               by = NULL, ...) {
+                              by = NULL, ...) {
   rows_update_forest(x, y,
                      by = by,
                      patch = TRUE)
