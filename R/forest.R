@@ -238,9 +238,10 @@ climb <- function(.data, ...,
 
       if (!vec_is_empty(names)) {
         out <- timbr_children(out, name)
-        climb(out, !!!names,
-              .deep = FALSE)
+        out <- climb(out, !!!names,
+                     .deep = FALSE)
       }
+      out
     }
   }
 }
