@@ -2,7 +2,7 @@ pandoc: 2.7.3
 pkgdown: 2.0.2
 pkgdown_sha: ~
 articles: {}
-last_built: 2022-04-03T03:03Z
+last_built: 2022-04-03T03:45Z
 urls:
   reference: https://uchidamizuki.github.io/timbr/reference
   article: https://uchidamizuki.github.io/timbr/articles
