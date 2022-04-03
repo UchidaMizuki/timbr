@@ -249,28 +249,10 @@ climb <- function(.data, ...,
 timbr_pull <- function(data, name) {
   roots <- data$roots
   nodes <- data$nodes
-  root_nodes <- vec_slice(nodes, roots$.)
 
-  name <- tidyselect::vars_pull(vec_unique(root_nodes$.$name), name)
-
-  locs <- vec_equal(root_nodes$.$name, name,
-                    na_equal = TRUE)
-  new_roots <- vec_slice(roots, locs)
-  new_root_nodes <- new_roots$.
-
-  grps <- vec_group_loc(nodes$.$parent)
-  grps <- vec_slice(grps, !is.na(grps$key))
-  grp_keys <- grps$key
-
-  node_locs <- integer()
-  repeat {
-    node_locs <- vec_c(new_root_nodes, node_locs)
-    root_grps <- vec_slice(grps, vec_in(grp_keys, new_root_nodes))
-    new_root_nodes <- vec_c(!!!root_grps$loc)
-    if (vec_is_empty(new_root_nodes)) {
-      break
-    }
-  }
+  loc <- timbr_pull_loc(roots, nodes$., name)
+  new_roots <- loc$new_roots
+  node_locs <- loc$node_locs
 
   # new_nodes
   node_locs <- vec_sort(node_locs)
@@ -291,6 +273,31 @@ timbr_pull <- function(data, name) {
   forest(new_roots, new_nodes)
 }
 
+timbr_pull_loc <- function(roots, nodes, name) {
+  root_nodes <- vec_slice(nodes, roots$.)
+  name <- tidyselect::vars_pull(vec_unique(root_nodes$name), name)
+
+  locs <- vec_equal(root_nodes$name, name,
+                    na_equal = TRUE)
+  new_roots <- vec_slice(roots, locs)
+  new_root_nodes <- new_roots$.
+
+  grps <- vec_group_loc(nodes$parent)
+  grps <- vec_slice(grps, !is.na(grps$key))
+  grp_keys <- grps$key
+
+  node_locs <- integer()
+  repeat {
+    node_locs <- vec_c(new_root_nodes, node_locs)
+    root_grps <- vec_slice(grps, vec_in(grp_keys, new_root_nodes))
+    new_root_nodes <- vec_c(!!!root_grps$loc)
+    if (vec_is_empty(new_root_nodes)) {
+      break
+    }
+  }
+  list(new_roots = new_roots,
+       node_locs = node_locs)
+}
 
 
 # Grouping ----------------------------------------------------------------
