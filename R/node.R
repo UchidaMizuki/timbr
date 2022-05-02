@@ -5,20 +5,20 @@
 #' @name node
 NULL
 
-#' @export
 #' @rdname node
+#' @export
 node_name <- function() {
   dplyr::cur_data()$.$name
 }
 
-#' @export
 #' @rdname node
+#' @export
 node_value <- function() {
   dplyr::cur_data()$.$value
 }
 
-#' @export
 #' @rdname node
+#' @export
 node_parent <- function() {
   dplyr::cur_data()$.$parent
 }

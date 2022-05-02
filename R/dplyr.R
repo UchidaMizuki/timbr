@@ -28,7 +28,14 @@ mutate.forest <- function(.data, ...) {
                             root_nodes)
   root_nodes <- dplyr::new_grouped_df(root_nodes, group_data(roots))
 
-  new_root_nodes <- mutate(root_nodes, ...)
+  if (is_rowwise_forest(.data)) {
+    root_nodes <- rowwise(root_nodes)
+    new_root_nodes <- mutate(root_nodes, ...)
+    new_root_nodes <- ungroup(new_root_nodes)
+  } else {
+    new_root_nodes <- mutate(root_nodes, ...)
+  }
+
   new_root_nodes <- drop_cols(new_root_nodes, grp_vars)
 
   new_nodes <- cbind_check(nodes,
@@ -97,8 +104,15 @@ summarise.forest <- function(.data, ...,
   root_node_data <- cbind_check(roots[grp_vars], root_node_data)
   root_node_data <- dplyr::new_grouped_df(root_node_data, group_data(roots))
 
-  new_root_node_data <- summarise(root_node_data, ...,
-                                  .groups = "drop")
+  if (is_rowwise_forest(.data)) {
+    root_node_data <- rowwise(root_node_data)
+    new_root_node_data <- summarise(root_node_data, ...,
+                                    .groups = "drop")
+    new_root_node_data <- ungroup(new_root_node_data)
+  } else {
+    new_root_node_data <- summarise(root_node_data, ...,
+                                    .groups = "drop")
+  }
 
   new_root_nodes <- cbind_check(. = new_root_nodes,
                                 drop_cols(new_root_node_data, grp_vars))
@@ -276,4 +290,24 @@ timbr_match <- function(needles, needle_locs, haystacks, haystack_locs) {
     }
   }
   vec_c(!!!out)
+}
+
+#' @rdname dplyr
+#' @importFrom dplyr rowwise
+#' @export
+rowwise.forest <- function(.data, ...) {
+  class(.data) <- c("rowwise_forest", class(.data))
+  .data
+}
+
+is_rowwise_forest <- function(x) {
+  inherits(x, "rowwise_forest")
+}
+
+#' @rdname dplyr
+#' @importFrom dplyr ungroup
+#' @export
+ungroup.forest <- function(x, ...) {
+  class(x) <- setdiff(class(x), "rowwise_forest")
+  x
 }

@@ -31,7 +31,7 @@ as_forest <- function(x, ...) {
 #' @export
 as_forest.rowwise_df <- function(x, ...) {
   grp_vars <- dplyr::group_vars(x)
-  x <- dplyr::ungroup(x)
+  x <- ungroup(x)
 
   grps <- x[grp_vars]
   grps <- vec_cast(grps,
@@ -377,6 +377,7 @@ format.forest <- function(x, ...) {
                           size_nodes = vec_size(nodes),
                           size_features = ncol(root_nodes),
                           group_sum = group_sum, ...,
+                          is_rowwise = is_rowwise_forest(x),
                           class = c("tbl_forest", "tbl"))
   format(roots)
 }
@@ -386,14 +387,23 @@ format.forest <- function(x, ...) {
 tbl_sum.tbl_forest <- function(x) {
   size_nodes <- attr(x, "size_nodes")
   size_features <- attr(x, "size_features")
+  group_sum <- attr(x, "group_sum")
+  is_rowwise <- attr(x, "is_rowwise")
 
   node_names <- field(x$., "name")
   size_rle <- rle(node_names)$lengths
 
-  c(`A forest` = paste(big_mark(size_nodes), plural("node", size_nodes), "and",
-                       big_mark(size_features), plural("feature", size_features)),
-    attr(x, "group_sum"),
-    Roots = commas(paste0(node_names[cumsum(size_rle)], " [", big_mark(size_rle), "]")))
+  out <- c(`A forest` = paste(big_mark(size_nodes), plural("node", size_nodes), "and",
+                              big_mark(size_features), plural("feature", size_features)),
+           group_sum,
+           Roots = commas(paste0(node_names[cumsum(size_rle)], " [", big_mark(size_rle), "]")))
+
+  if (is_rowwise) {
+    out <- c(out,
+             "Rowwise" = "")
+  }
+
+  out
 }
 
 #' @export

@@ -8,6 +8,8 @@
 \alias{relocate.forest}
 \alias{rows_update.forest}
 \alias{rows_patch.forest}
+\alias{rowwise.forest}
+\alias{ungroup.forest}
 \title{dplyr methods for forest objects}
 \usage{
 \method{mutate}{forest}(.data, ...)
@@ -21,6 +23,10 @@
 \method{rows_update}{forest}(x, y, by = NULL, ...)
 
 \method{rows_patch}{forest}(x, y, by = NULL, ...)
+
+\method{rowwise}{forest}(.data, ...)
+
+\method{ungroup}{forest}(x, ...)
 }
 \arguments{
 \item{.data}{A forest.}
