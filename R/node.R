@@ -1,3 +1,28 @@
+#' Attributes of root nodes
+#'
+#' @return A vector of names, values, or parents of root nodes.
+#'
+#' @name node
+NULL
+
+#' @export
+#' @rdname node
+node_name <- function() {
+  dplyr::cur_data()$.$name
+}
+
+#' @export
+#' @rdname node
+node_value <- function() {
+  dplyr::cur_data()$.$value
+}
+
+#' @export
+#' @rdname node
+node_parent <- function() {
+  dplyr::cur_data()$.$parent
+}
+
 timbr_node <- function(name, value) {
   new_rcrd(vec_recycle_common(name = name,
                               value = value),

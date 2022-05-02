@@ -23,23 +23,21 @@ mutate.forest <- function(.data, ...) {
 
   grp_vars <- group_vars(roots)
 
-  node_data <- drop_node(nodes)
-  root_node_data <- vec_slice(node_data, roots$.)
-  root_node_data <- cbind_check(roots[grp_vars],
-                                root_node_data)
-  root_node_data <- dplyr::new_grouped_df(root_node_data, group_data(roots))
+  root_nodes<- vec_slice(nodes, roots$.)
+  root_nodes <- cbind_check(roots[grp_vars],
+                            root_nodes)
+  root_nodes <- dplyr::new_grouped_df(root_nodes, group_data(roots))
 
-  new_root_node_data <- mutate(root_node_data, ...)
-  new_root_node_data <- drop_cols(new_root_node_data, grp_vars)
+  new_root_nodes <- mutate(root_nodes, ...)
+  new_root_nodes <- drop_cols(new_root_nodes, grp_vars)
 
-  new_node_data <- cbind_check(node_data,
-                               vec_init(drop_cols(new_root_node_data, names(node_data))))
-  new_node_data <- new_node_data[names(new_root_node_data)]
+  new_nodes <- cbind_check(nodes,
+                           vec_init(drop_cols(new_root_nodes, names(nodes))))
+  new_nodes <- new_nodes[names(new_root_nodes)]
 
-  vec_slice(new_node_data, roots$.) <- new_root_node_data
+  vec_slice(new_nodes, roots$.) <- new_root_nodes
 
-  .data$nodes <- cbind_check(. = nodes$.,
-                             new_node_data)
+  .data$nodes <- new_nodes
   .data
 }
 
@@ -95,7 +93,7 @@ summarise.forest <- function(.data, ...,
   }
 
   # summarise
-  root_node_data <- vec_slice(drop_node(nodes), roots$.)
+  root_node_data <- vec_slice(nodes, roots$.)
   root_node_data <- cbind_check(roots[grp_vars], root_node_data)
   root_node_data <- dplyr::new_grouped_df(root_node_data, group_data(roots))
 
