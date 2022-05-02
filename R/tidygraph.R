@@ -6,9 +6,9 @@ as_tbl_graph.forest <- function(x,
 
   # edges
   node_parents <- nodes$.$parent
-  loc <- !vec_equal_na(node_parents)
-  edges <- tibble::tibble(from = node_parents[loc],
-                          to = vec_seq_along(nodes)[loc])
+  locs <- !vec_equal_na(node_parents)
+  edges <- tibble::tibble(from = vec_slice(node_parents, locs),
+                          to = vec_slice(vec_seq_along(nodes), locs))
 
   # nodes
   nodes$. <- timbr_node(nodes$.$name, nodes$.$value)
