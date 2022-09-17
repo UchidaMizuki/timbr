@@ -1,6 +1,6 @@
-#' Modify a forest hierarchically
+#' Apply a function hierarchically to a forest
 #'
-#' Modifies nodes of a forest in the climbing or descending direction.
+#' Apply a function hierarchically to a forest in the climbing or descending direction.
 #'
 #' @param .x A forest
 #' @param .f A function, formula, or vector (not necessarily atomic).
@@ -9,9 +9,8 @@
 #'
 #' @return A forest.
 #'
-#' @importFrom purrr modify
 #' @export
-modify.forest <- function(.x, .f, ..., .climb = FALSE) {
+map_forest <- function(.x, .f, ..., .climb = FALSE) {
   .f <- purrr::as_mapper(.f, ...)
 
   nodes <- .x$nodes

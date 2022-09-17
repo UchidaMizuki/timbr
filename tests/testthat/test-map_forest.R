@@ -1,4 +1,4 @@
-test_that("modify", {
+test_that("map_forest", {
   library(dplyr)
 
   fr <- expand.grid(key3 = letters,
@@ -14,7 +14,7 @@ test_that("modify", {
     summarise(value1 = sum(value1))
   fr2 <- fr %>%
     summarise() %>%
-    modify(function(x, y) {
+    map_forest(function(x, y) {
       x$value1 <- sum(y$value1)
       x
     })
@@ -25,7 +25,7 @@ test_that("modify", {
     summarise(value1 = first(value1))
   fr2 <- fr %>%
     summarise(value1 = sum(value1)) %>%
-    modify(function(x, y) {
+    map_forest(function(x, y) {
       x$value1 <- y$value1
       x
     },
@@ -40,7 +40,7 @@ test_that("modify", {
     mutate(value1 = NA) %>%
     summarise() %>%
     summarise(value1 = 3) %>%
-    modify(function(x, y) {
+    map_forest(function(x, y) {
       x$value1 <- y$value1 - 1
       x
     },

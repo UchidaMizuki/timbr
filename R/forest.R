@@ -320,12 +320,12 @@ leaves <- function(data) {
   data_root$nodes$root <- NA_integer_
   vec_slice(data_root$nodes$root, root_locs) <- root_locs
 
-  data_root <- modify(data_root,
-                      function(x, y) {
-                        x$root <- y$root
-                        x
-                      },
-                      .climb = TRUE)
+  data_root <- map_forest(data_root,
+                          function(x, y) {
+                            x$root <- y$root
+                            x
+                          },
+                          .climb = TRUE)
   needles <- vec_slice(data_root$nodes$root, node_locs)
   new_roots <- vec_slice(roots,
                          vec_match(needles, roots$.))
