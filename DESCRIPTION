@@ -1,7 +1,7 @@
 Package: timbr
 Type: Package
 Title: Forest Data Frames
-Version: 0.1.1
+Version: 0.1.1.9000
 Authors@R: 
     person(
         given = "Mizuki", 
@@ -17,6 +17,7 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.1
 Imports: 
+    cli,
     dplyr,
     memoise,
     pillar,
