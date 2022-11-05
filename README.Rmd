@@ -37,6 +37,15 @@ install.packages("timbr")
 # install.packages("devtools")
 devtools::install_github("UchidaMizuki/timbr")
 ```
+## Main Functions
+
+The main functions provided by timbr are as follows,
+
+- `children()`
+- `climb()`
+- `leaves()`
+- `map_forest()`
+- `rbind()`
 
 ## tidyverse methods
 
@@ -57,20 +66,45 @@ library(dplyr)
 ```{r}
 fr <- tidyr::expand_grid(key1 = letters[1:2],
                          key2 = letters[1:2],
-                         key3 = letters[1:2]) %>% 
-  mutate(value = row_number()) %>% 
+                         key3 = letters[1:2]) |>  
+  mutate(value = row_number()) |> 
   forest_by(key1, key2, key3)
 
-fr
-
-fr_sum <- fr %>% 
-  summarise(value = sum(value)) %>% 
+fr_sum <- fr |> 
+  summarise(value = sum(value)) |> 
   summarise(value = sum(value))
 
+fr
 fr_sum
-
 children(fr_sum)
-
-fr_sum %>% 
+fr_sum |> 
   climb(key3)
+```
+
+```{r}
+fr1 <- tidyr::expand_grid(key1 = letters[1:2], 
+                          key2_1 = letters[1:2],
+                          key3_1 = letters[1:2]) |> 
+  mutate(value = row_number()) |> 
+  forest_by(key1, key2_1, key3_1) |> 
+  summarise(value = sum(value))
+
+fr2 <- tidyr::expand_grid(key1 = letters[1:2], 
+                          key2_2 = letters[1:2],
+                          key3_2 = letters[1:2]) |> 
+  mutate(value = row_number()) |> 
+  forest_by(key1, key2_2, key3_2) |> 
+  summarise(value = sum(value))
+
+fr <- rbind(fr1, fr2)
+fr_sum <- fr |> 
+  summarise(value = sum(value))
+
+fr
+fr_sum
+map_forest(fr_sum,
+           function(x, children) {
+             x$value <- prod(children$value)
+             x
+           })
 ```
