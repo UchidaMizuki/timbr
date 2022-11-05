@@ -77,317 +77,6 @@ forest_by <- function(.data, ...) {
   as_forest(dplyr::rowwise(.data, ...))
 }
 
-#' @export
-rbind.forest <- function(..., deparse.level = 1) {
-  frs <- rlang::list2(...)
-  size_frs <- vec_size(frs)
-
-  new_roots <- vec_init(list(), size_frs)
-  new_nodes <- vec_init(list(), size_frs)
-
-  size_nodes <- 0L
-  for (i in seq_len(size_frs)) {
-    fr <- frs[[i]]
-    roots <- fr$roots
-    nodes <- fr$nodes
-
-    roots$. <- roots$. + size_nodes
-    new_roots[[i]] <- roots
-
-    nodes$.$parent <- nodes$.$parent + size_nodes
-    new_nodes[[i]] <- nodes
-
-    size_nodes <- size_nodes + vec_size(nodes)
-  }
-
-  new_roots <- rbind_check(!!!new_roots)
-  loc <- which(names(new_roots) == ".")
-  new_roots <- new_roots[c(vec_as_location(-loc, ncol(new_roots)), loc)]
-
-  new_nodes <- rbind_check(!!!new_nodes)
-  stopifnot(
-    vec_is_empty(intersect(names(drop_node(new_roots)),
-                           names(drop_node(new_nodes))))
-  )
-
-  forest(new_roots, new_nodes)
-}
-
-
-
-# Verbs -------------------------------------------------------------------
-
-#' Children of the forest
-#'
-#' Convert a forest into a forest consisting of its child nodes.
-#'
-#' @param data A forest.
-#' @param name `NULL` (default) or a scalar character specifying the node name
-#' of child nodes.
-#'
-#' @return A forest.
-#'
-#' @export
-children <- function(data,
-                     name = NULL) {
-  name <- rlang::enquo(name)
-
-  if (rlang::quo_is_null(name)) {
-    name <- vec_slice(data$nodes$.$name, data$roots$.)
-    name <- vec_unique(name)
-    stopifnot(
-      rlang::is_scalar_character(name)
-    )
-  } else {
-    name <- rlang::as_name(name)
-  }
-
-  data <- timbr_pull(data, name)
-  timbr_children(data, name)
-}
-
-timbr_children <- function(data,
-                           name = NULL) {
-  roots <- data$roots
-  nodes <- data$nodes
-
-  new_root_keys <- drop_node(roots)
-
-  if (!is.null(name)) {
-    new_root_keys <- cbind_check(new_root_keys,
-                                 !!name := vec_slice(nodes$.$value, roots$.))
-  }
-
-  # new_nodes
-  new_root_locs <- vec_in(nodes$.$parent, roots$.)
-  new_root_nodes <- vec_slice(nodes, new_root_locs)
-
-  new_root_keys <- vec_slice(new_root_keys,
-                             vec_match(new_root_nodes$.$parent, roots$.))
-
-  new_root_nodes$.$parent <- NA_integer_
-  vec_slice(nodes, new_root_locs) <- new_root_nodes
-
-  node_locs <- vec_as_location(-roots$., vec_size(nodes))
-  new_nodes <- vec_slice(nodes, node_locs)
-  new_node_locs <- vec_seq_along(new_nodes)
-  new_nodes$.$parent <- new_nodes$.$parent + new_node_locs - node_locs
-
-  # new_roots
-  new_roots <- cbind_check(new_root_keys,
-                           . = vec_slice(new_node_locs,
-                                         vec_equal_na(new_nodes$.$parent)))
-  new_roots <- dplyr::grouped_df(new_roots, names(new_root_keys))
-
-  forest(new_roots, new_nodes)
-}
-
-#' Climb a forest from parents to children
-#'
-#' Climb a forest from parents to children with one or more node names.
-#'
-#' @param .data A forest.
-#' @param ... A list of node names to climb the forest.
-#' @param .deep Whether to search deeply for node names or not?
-#'
-#' @return A forest.
-#'
-#' @export
-climb <- function(.data, ...,
-                  .deep = TRUE) {
-  names <- rlang::enquos(...)
-
-  if (vec_is_empty(names)) {
-    .data
-  } else {
-    name <- rlang::as_name(names[[1L]])
-    names <- names[-1L]
-
-    if (.deep) {
-      nodes <- .data$nodes
-      root_nodes <- vec_slice(nodes, .data$roots$.)
-      root_node_names <- vec_unique(root_nodes$.$name)
-
-      frs <- vec_init_along(list(), root_node_names)
-
-      for (i in vec_seq_along(root_node_names)) {
-        root_node_name <- root_node_names[[i]]
-        fr <- timbr_pull(.data, root_node_name)
-
-        if (root_node_name == name) {
-          if (vec_is_empty(names)) {
-            frs[[i]] <- fr
-          } else {
-            fr <- timbr_children(fr, name)
-            frs[[i]] <- climb(fr, !!!names)
-          }
-        } else {
-          fr <- timbr_children(fr)
-
-          if (vec_is_empty(fr$nodes)) {
-            frs[[i]] <- fr
-          } else {
-            frs[[i]] <- climb(fr, !!name, !!!names)
-          }
-        }
-      }
-
-      rlang::exec(rbind, !!!frs)
-    } else {
-      out <- timbr_pull(.data, name)
-
-      if (!vec_is_empty(names)) {
-        out <- timbr_children(out, name)
-        out <- climb(out, !!!names,
-                     .deep = FALSE)
-      }
-      out
-    }
-  }
-}
-
-timbr_pull <- function(data, name) {
-  roots <- data$roots
-  nodes <- data$nodes
-
-  loc <- timbr_pull_loc(roots, nodes$., name)
-  new_roots <- loc$new_roots
-  node_locs <- loc$node_locs
-
-  # new_nodes
-  node_locs <- vec_sort(node_locs)
-  new_node_locs <- vec_seq_along(node_locs)
-
-  new_nodes <- vec_slice(nodes, node_locs)
-  new_nodes$.$parent <- new_nodes$.$parent + new_node_locs - node_locs
-
-  # new_roots
-  new_root_keys <- drop_node(new_roots)
-  new_roots <- cbind_check(new_root_keys,
-                           . = vec_slice(new_node_locs, vec_equal_na(new_nodes$.$parent)))
-
-  if (dplyr::is_grouped_df(new_root_keys)) {
-    new_roots <- dplyr::new_grouped_df(new_roots, group_data(new_root_keys))
-  }
-
-  forest(new_roots, new_nodes)
-}
-
-timbr_pull_loc <- function(roots, nodes, name) {
-  root_nodes <- vec_slice(nodes, roots$.)
-  name <- tidyselect::vars_pull(vec_unique(root_nodes$name), name)
-
-  locs <- vec_equal(root_nodes$name, name,
-                    na_equal = TRUE)
-  new_roots <- vec_slice(roots, locs)
-  new_root_nodes <- new_roots$.
-
-  grps <- vec_group_loc(nodes$parent)
-  grps <- vec_slice(grps, !vec_equal_na(grps$key))
-  grp_keys <- grps$key
-
-  node_locs <- integer()
-  repeat {
-    node_locs <- vec_c(new_root_nodes, node_locs)
-    root_grps <- vec_slice(grps, vec_in(grp_keys, new_root_nodes))
-    new_root_nodes <- vec_c(!!!root_grps$loc)
-    if (vec_is_empty(new_root_nodes)) {
-      break
-    }
-  }
-  list(new_roots = new_roots,
-       node_locs = node_locs)
-}
-
-#' Leaf nodes of a forest
-#'
-#' @param data A forest.
-#'
-#' @return A forest.
-#'
-#' @export
-leaves <- function(data) {
-  roots <- data$roots
-  nodes <- data$nodes
-
-  node_parents <- nodes$.$parent
-  node_parents <- vec_slice(node_parents, !vec_equal_na(node_parents))
-  node_locs <- vec_as_location(-node_parents, vec_size(nodes))
-
-  data_root <- data
-  data_root$nodes <- data_root$nodes["."]
-  root_locs <- roots$.
-  data_root$nodes$root <- NA_integer_
-  vec_slice(data_root$nodes$root, root_locs) <- root_locs
-
-  data_root <- map_forest(data_root,
-                          function(x, y) {
-                            x$root <- y$root
-                            x
-                          },
-                          .climb = TRUE)
-  needles <- vec_slice(data_root$nodes$root, node_locs)
-  new_roots <- vec_slice(roots,
-                         vec_match(needles, roots$.))
-  new_roots$. <- vec_seq_along(new_roots)
-
-  new_nodes <- vec_slice(nodes, node_locs)
-  new_nodes$.$parent <- NA_integer_
-
-  forest(new_roots, new_nodes)
-}
-
-
-# Grouping ----------------------------------------------------------------
-
-#' @importFrom dplyr group_data
-#' @export
-group_data.forest <- function(.data) {
-  modify_roots(group_data)(.data)
-}
-
-#' @importFrom dplyr group_keys
-#' @export
-group_keys.forest <- function(.tbl, ...) {
-  modify_roots(group_keys)(.tbl, ...)
-}
-
-#' @importFrom dplyr group_indices
-#' @export
-group_indices.forest <- function(.data, ...) {
-  modify_roots(group_indices)(.data, ...)
-}
-
-#' @importFrom dplyr group_vars
-#' @export
-group_vars.forest <- function(x) {
-  modify_roots(group_vars)(x)
-}
-
-#' @importFrom dplyr groups
-#' @export
-groups.forest <- function(x) {
-  modify_roots(groups)(x)
-}
-
-#' @importFrom dplyr group_size
-#' @export
-group_size.forest <- function(x) {
-  modify_roots(group_size)(x)
-}
-
-#' @importFrom dplyr n_groups
-#' @export
-n_groups.forest <- function(x) {
-  modify_roots(n_groups)(x)
-}
-
-modify_roots <- function(f) {
-  function(x, ...) {
-    f(x$roots, ...)
-  }
-}
-
 
 
 # Printing ----------------------------------------------------------------
@@ -414,8 +103,9 @@ format.forest <- function(x, ...) {
   roots <- new_data_frame(roots,
                           size_nodes = vec_size(nodes),
                           size_features = ncol(root_nodes),
-                          group_sum = group_sum, ...,
-                          is_rowwise = is_rowwise_forest(x),
+                          group_sum = group_sum,
+                          tree = tree_forest(x),
+                          is_rowwise = is_rowwise_forest(x), ...,
                           class = c("tbl_forest", "tbl"))
   format(roots)
 }
@@ -425,20 +115,37 @@ format.forest <- function(x, ...) {
 tbl_sum.tbl_forest <- function(x) {
   size_nodes <- attr(x, "size_nodes")
   size_features <- attr(x, "size_features")
-  group_sum <- attr(x, "group_sum")
-  is_rowwise <- attr(x, "is_rowwise")
 
   node_names <- field(x$., "name")
   size_rle <- rle(node_names)$lengths
 
   out <- c(`A forest` = paste(big_mark(size_nodes), plural("node", size_nodes), "and",
                               big_mark(size_features), plural("feature", size_features)),
-           group_sum,
-           Roots = commas(paste0(node_names[cumsum(size_rle)], " [", big_mark(size_rle), "]")))
+           attr(x, "group_sum"))
+           # Roots = commas(paste0(node_names[cumsum(size_rle)], " [", big_mark(size_rle), "]")))
 
-  if (is_rowwise) {
+  if (attr(x, "is_rowwise")) {
     out <- c(out,
-             "Rowwise" = "")
+             Rowwise = "")
+  }
+
+  out
+}
+
+#' @importFrom pillar tbl_format_header
+#' @export
+tbl_format_header.tbl_forest <- function(x, setup, ...) {
+  out <- NextMethod()
+  trees <- c(pillar::style_subtle("# Trees:"),
+             pillar::style_subtle(paste0("#   ", attr(x, "tree"))))
+
+  if (attr(x, "is_rowwise")) {
+    size <- vec_size(out)
+    out <- c(out[-size],
+             trees,
+             out[[size]])
+  } else {
+    out <- c(out, trees)
   }
 
   out
@@ -449,3 +156,95 @@ print.forest <- function(x, ...) {
   writeLines(format(x, ...))
   invisible(x)
 }
+
+tree_forest <- function(x) {
+  x$nodes <- cbind_check(. = x$nodes$.,
+                         name = x$nodes$.$name,
+                         size = NA_integer_,
+                         children = list(NULL))
+  x <- map_forest(x,
+                  function(x, y) {
+                    y <- dplyr::group_by(y, .data$name)
+                    y <- summarise(y,
+                                   size = .env$n(),
+                                   children = summarise_tree_children(children))
+                    x$children[[1L]] <- y
+                    x
+                  })
+  x <- vec_slice(x$nodes, x$roots$.)
+  x <- dplyr::group_by(x, .data$name)
+  x <- summarise(x,
+                 size = .env$n(),
+                 children = summarise_tree_children(children))
+  vec_c(!!!tree_forest_impl(x))
+}
+
+summarise_tree_children <- function(x) {
+  x <- vec_c(!!!x)
+
+  if (is.null(x)) {
+    return(list(NULL))
+  } else {
+    x <- dplyr::group_by(x, .data$name)
+    x <- summarise(x,
+                   size = sum(.data$size),
+                   children = summarise_tree_children(children))
+    return(list(x))
+  }
+}
+
+tree_forest_impl <- function(x) {
+  style <- box_chars()
+  is_last <- vec_seq_along(x) == vec_size(x)
+  purrr::pmap(list(x$name, x$size, x$children, is_last),
+              function(name, size, children, is_last) {
+                children <- tree_forest_impl(children)
+                is_last <- vec_seq_along(children) == vec_size(children)
+                out <- purrr::map2(children, is_last,
+                                   function(children, is_last) {
+                                     if (is_last) {
+                                       prefix_head <- paste0(style$l, style$h)
+                                       prefix_tail <- "  "
+                                     } else {
+                                       prefix_head <- paste0(style$j, style$h)
+                                       prefix_tail <- paste0(style$v, " ")
+                                     }
+
+                                     out <- paste0(prefix_head, children[[1L]])
+
+                                     if (vec_size(children) > 1L) {
+                                       out <- c(out,
+                                                paste0(prefix_tail, children[-1L]))
+                                     }
+
+                                     out
+                                   })
+                c(paste0(name, " [", big_mark(size), "]"), vec_c(!!!out))
+              })
+}
+
+# tree_forest <- function(data) {
+#   style <- box_chars()
+#   is_last <- vec_seq_along(data) == vec_size(data)
+#   out <- purrr::pmap(list(data$name, data$size, data$children, is_last),
+#                      function(name, size, children, is_last) {
+#                        if (is_last) {
+#                          prefix_head <- paste0(style$l, style$h)
+#                          prefix_tail <- "  "
+#                        } else {
+#                          prefix_head <- paste0(style$j, style$h)
+#                          prefix_tail <- paste0(style$v, " ")
+#                        }
+#
+#                        children <- tree_forest(children)
+#                        out <- paste0(prefix_head, name, " [", big_mark(size), "]")
+#
+#                        if (!vec_is_empty(children)) {
+#                          out <- c(out,
+#                                   paste0(prefix_tail, children))
+#                        }
+#
+#                        out
+#                      })
+#   vec_c(!!!out)
+# }
