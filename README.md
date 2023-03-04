@@ -9,9 +9,9 @@
 status](https://www.r-pkg.org/badges/version/timbr)](https://CRAN.R-project.org/package=timbr)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![R-CMD-check](https://github.com/UchidaMizuki/timbr/workflows/R-CMD-check/badge.svg)](https://github.com/UchidaMizuki/timbr/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/UchidaMizuki/timbr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/UchidaMizuki/timbr?branch=main)
+[![R-CMD-check](https://github.com/UchidaMizuki/timbr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/UchidaMizuki/timbr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 timbr provides data frames for forest (or tree) data structures. You can
@@ -36,20 +36,20 @@ devtools::install_github("UchidaMizuki/timbr")
 
 The main functions provided by timbr are as follows,
 
--   `children()`
--   `climb()`
--   `leaves()`
--   `map_forest()`
--   `rbind()`
+- `children()`
+- `climb()`
+- `leaves()`
+- `map_forest()`
+- `rbind()`
 
 ## tidyverse methods
 
 timbr provides some tidyverse methods as follows,
 
--   `mutate()`
--   `summarise()`
--   `select()` and `relocate()`
--   `rows_update()` and `rows_patch()`
+- `mutate()`
+- `summarise()`
+- `select()` and `relocate()`
+- `rows_update()` and `rows_patch()`
 
 ## Examples
 
