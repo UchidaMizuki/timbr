@@ -1,3 +1,8 @@
+# timbr 0.2.0
+
+* Now, display the tree structure in the header of `forest`.
+* Fix problems with CRAN checks.
+
 # timbr 0.1.1
 
 * Rename modify.forest() to map_forest() because modify() will no longer be S3 
