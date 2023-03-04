@@ -1,9 +1,6 @@
 #' @importFrom tibble as_tibble
 #' @export
-as_tibble.forest <- function(x, ...,
-                             .rows = NULL,
-                             .name_repair = c("check_unique", "unique", "universal", "minimal"),
-                             rownames = pkgconfig::get_config("tibble::rownames", NULL)) {
+as_tibble.forest <- function(x, ...) {
   roots <- x$roots
   nodes <- x$nodes
 
@@ -19,8 +16,5 @@ as_tibble.forest <- function(x, ...,
   out <- cbind_check(roots[group_vars(x)],
                      !!root_node_names := root_node_values,
                      root_node_data)
-  as_tibble(out, ...,
-            .rows = .rows,
-            .name_repair = .name_repair,
-            rownames = rownames)
+  as_tibble(out, ...)
 }
