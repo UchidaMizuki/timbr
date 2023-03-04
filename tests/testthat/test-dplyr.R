@@ -1,9 +1,9 @@
 test_that("dplyr", {
   library(dplyr)
 
-  df <- tidyr::expand_grid(key1 = letters[1:2],
-                           key2 = letters[1:2],
-                           key3 = letters[1:2]) %>%
+  df <- vec_expand_grid(key1 = letters[1:2],
+                        key2 = letters[1:2],
+                        key3 = letters[1:2]) %>%
     mutate(value = row_number())
   fr <- df %>%
     forest_by(key1, key2, key3)
