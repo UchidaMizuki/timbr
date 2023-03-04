@@ -122,7 +122,7 @@ tbl_sum.tbl_forest <- function(x) {
   out <- c(`A forest` = paste(big_mark(size_nodes), plural("node", size_nodes), "and",
                               big_mark(size_features), plural("feature", size_features)),
            attr(x, "group_sum"))
-           # Roots = commas(paste0(node_names[cumsum(size_rle)], " [", big_mark(size_rle), "]")))
+  # Roots = commas(paste0(node_names[cumsum(size_rle)], " [", big_mark(size_rle), "]")))
 
   if (attr(x, "is_rowwise")) {
     out <- c(out,
@@ -158,93 +158,51 @@ print.forest <- function(x, ...) {
 }
 
 tree_forest <- function(x) {
-  x$nodes <- cbind_check(. = x$nodes$.,
-                         name = x$nodes$.$name,
-                         size = NA_integer_,
-                         children = list(NULL))
-  x <- map_forest(x,
-                  function(x, y) {
-                    y <- dplyr::group_by(y, .data$name)
-                    y <- summarise(y,
-                                   size = .env$n(),
-                                   children = summarise_tree_children(children))
-                    x$children[[1L]] <- y
-                    x
-                  })
-  x <- vec_slice(x$nodes, x$roots$.)
-  x <- dplyr::group_by(x, .data$name)
-  x <- summarise(x,
-                 size = .env$n(),
-                 children = summarise_tree_children(children))
-  vec_c(!!!tree_forest_impl(x))
-}
-
-summarise_tree_children <- function(x) {
-  x <- vec_c(!!!x)
-
-  if (is.null(x)) {
-    return(list(NULL))
-  } else {
-    x <- dplyr::group_by(x, .data$name)
-    x <- summarise(x,
-                   size = sum(.data$size),
-                   children = summarise_tree_children(children))
-    return(list(x))
-  }
-}
-
-tree_forest_impl <- function(x) {
   style <- box_chars()
-  is_last <- vec_seq_along(x) == vec_size(x)
-  purrr::pmap(list(x$name, x$size, x$children, is_last),
-              function(name, size, children, is_last) {
-                children <- tree_forest_impl(children)
-                is_last <- vec_seq_along(children) == vec_size(children)
-                out <- purrr::map2(children, is_last,
-                                   function(children, is_last) {
-                                     if (is_last) {
-                                       prefix_head <- paste0(style$l, style$h)
-                                       prefix_tail <- "  "
-                                     } else {
-                                       prefix_head <- paste0(style$j, style$h)
-                                       prefix_tail <- paste0(style$v, " ")
-                                     }
 
-                                     out <- paste0(prefix_head, children[[1L]])
+  node_names <- x$nodes$.$name
+  group_rle <- vec_group_rle(node_names)
+  seq_along <- vec_seq_along(group_rle)
+  node_ids <- vec_rep_each(seq_along, field(group_rle, "length"))
 
-                                     if (vec_size(children) > 1L) {
-                                       out <- c(out,
-                                                paste0(prefix_tail, children[-1L]))
-                                     }
+  node_parents <- vec_slice(node_ids, x$nodes$.$parent)
 
-                                     out
-                                   })
-                c(paste0(name, " [", big_mark(size), "]"), vec_c(!!!out))
-              })
+  loc <- vec_match(seq_along, node_ids)
+
+  node_names <- vec_slice(node_names, loc)
+  node_parents <- vec_slice(node_parents, loc)
+
+  out <- tibble::tibble(. = tibble::tibble(name = node_names,
+                                           value = NA_character_,
+                                           parent = node_parents),
+                        name = node_names,
+                        size = field(group_rle, "length"),
+                        children = list(character()))
+  out <- map_forest_impl(out,
+                         function(x, y) {
+                           is_last <- vec_seq_along(y) == vec_size(y)
+                           children <- purrr::pmap(list(y$name, y$size, y$children, is_last),
+                                                   function(name, size, children, is_last) {
+                                                     if (is_last) {
+                                                       prefix_head <- paste0(style$l, style$h)
+                                                       prefix_tail <- "  "
+                                                     } else {
+                                                       prefix_head <- paste0(style$j, style$h)
+                                                       prefix_tail <- paste0(style$v, " ")
+                                                     }
+
+                                                     c(paste0(prefix_head, name, " [", big_mark(size), "]"),
+                                                       paste0(prefix_tail, children,
+                                                              recycle0 = TRUE))
+                                                   })
+                           x$children <- list(purrr::list_c(children))
+                           x
+                         })
+  out <- vec_slice(out, is.na(out$.$parent))
+  out <- purrr::pmap(list(out$name, out$size, out$children),
+                     function(name, size, children) {
+                       c(paste0(name, " [", big_mark(size), "]"),
+                         children)
+                     })
+  list_unchop(out)
 }
-
-# tree_forest <- function(data) {
-#   style <- box_chars()
-#   is_last <- vec_seq_along(data) == vec_size(data)
-#   out <- purrr::pmap(list(data$name, data$size, data$children, is_last),
-#                      function(name, size, children, is_last) {
-#                        if (is_last) {
-#                          prefix_head <- paste0(style$l, style$h)
-#                          prefix_tail <- "  "
-#                        } else {
-#                          prefix_head <- paste0(style$j, style$h)
-#                          prefix_tail <- paste0(style$v, " ")
-#                        }
-#
-#                        children <- tree_forest(children)
-#                        out <- paste0(prefix_head, name, " [", big_mark(size), "]")
-#
-#                        if (!vec_is_empty(children)) {
-#                          out <- c(out,
-#                                   paste0(prefix_tail, children))
-#                        }
-#
-#                        out
-#                      })
-#   vec_c(!!!out)
-# }

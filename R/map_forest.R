@@ -10,10 +10,17 @@
 #' @return A forest.
 #'
 #' @export
-map_forest <- function(.x, .f, ..., .climb = FALSE) {
+map_forest <- function(.x, .f, ...,
+                       .climb = FALSE) {
   .f <- purrr::as_mapper(.f, ...)
 
-  nodes <- .x$nodes
+  .x$nodes <- map_forest_impl(.x$nodes, .f,
+                              .climb = .climb)
+  .x
+}
+
+map_forest_impl <- function(nodes, .f,
+                            .climb = FALSE) {
   node_names <- nodes$.$name
   node_parents <- nodes$.$parent
   node_data <- drop_node(nodes)
@@ -60,7 +67,6 @@ map_forest <- function(.x, .f, ..., .climb = FALSE) {
       vec_slice(node_data, grp_parent) <- new_node_data
     }
   }
-
-  .x$nodes[-1L] <- node_data
-  .x
+  nodes[-1L] <- node_data
+  nodes
 }
