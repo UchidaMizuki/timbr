@@ -24,7 +24,7 @@
 
 \method{rows_patch}{forest}(x, y, by = NULL, ...)
 
-\method{rowwise}{forest}(.data, ...)
+\method{rowwise}{forest}(data, ...)
 
 \method{ungroup}{forest}(x, ...)
 }
