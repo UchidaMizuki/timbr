@@ -1,6 +1,7 @@
 # timbr 0.2.1
 
 * Rename the argument for `rowwise.forest()`.
+* Fix problems with CRAN checks.
 
 # timbr 0.2.0
 
