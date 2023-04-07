@@ -3,6 +3,7 @@
 #' dplyr methods for forest objects.
 #'
 #' @param .data A forest.
+#' @param data A forest.
 #' @param ... Other arguments.
 #' @param .node `NULL` (default) or a vector to create new nodes.
 #' @param x A forest.

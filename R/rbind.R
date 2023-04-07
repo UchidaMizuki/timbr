@@ -1,5 +1,5 @@
 #' @export
-rbind.forest <- function(..., deparse.level = 1) {
+rbind.forest <- function(...) {
   frs <- rlang::list2(...)
   size_frs <- vec_size(frs)
 

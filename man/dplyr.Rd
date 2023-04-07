@@ -40,6 +40,8 @@
 \item{y}{A data frame.}
 
 \item{by}{An unnamed character vector giving the key columns.}
+
+\item{data}{A forest.}
 }
 \value{
 A forest.

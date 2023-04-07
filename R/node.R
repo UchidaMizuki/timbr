@@ -8,19 +8,19 @@ NULL
 #' @rdname node
 #' @export
 node_name <- function() {
-  dplyr::cur_data()$.$name
+  dplyr::pick(".")$.$name
 }
 
 #' @rdname node
 #' @export
 node_value <- function() {
-  dplyr::cur_data()$.$value
+  dplyr::pick(".")$.$value
 }
 
 #' @rdname node
 #' @export
 node_parent <- function() {
-  dplyr::cur_data()$.$parent
+  dplyr::pick(".")$.$parent
 }
 
 timbr_node <- function(name, value) {
