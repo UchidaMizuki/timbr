@@ -90,7 +90,7 @@
 <li><code><a href="reference/children.html">children()</a></code></li>
 <li><code><a href="reference/climb.html">climb()</a></code></li>
 <li><code><a href="reference/leaves.html">leaves()</a></code></li>
-<li><code><a href="reference/map_forest.html">map_forest()</a></code></li>
+<li><code><a href="reference/traverse.html">traverse()</a></code></li>
 <li><code><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind()</a></code></li>
 </ul>
 </div>
@@ -227,11 +227,11 @@
 <span><span class="co">#&gt;   &lt;node&gt;   &lt;int&gt;</span></span>
 <span><span class="co">#&gt; 1 &lt;key1&gt; a    20</span></span>
 <span><span class="co">#&gt; 2 &lt;key1&gt; b    52</span></span>
-<span><span class="fu"><a href="reference/map_forest.html">map_forest</a></span><span class="op">(</span><span class="va">fr_sum</span>,</span>
-<span>           <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">children</span><span class="op">)</span> <span class="op">{</span></span>
-<span>             <span class="va">x</span><span class="op">$</span><span class="va">value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/prod.html" class="external-link">prod</a></span><span class="op">(</span><span class="va">children</span><span class="op">$</span><span class="va">value</span><span class="op">)</span></span>
-<span>             <span class="va">x</span></span>
-<span>           <span class="op">}</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/traverse.html">traverse</a></span><span class="op">(</span><span class="va">fr_sum</span>,</span>
+<span>         <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">children</span><span class="op">)</span> <span class="op">{</span></span>
+<span>           <span class="va">x</span><span class="op">$</span><span class="va">value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/prod.html" class="external-link">prod</a></span><span class="op">(</span><span class="va">children</span><span class="op">$</span><span class="va">value</span><span class="op">)</span></span>
+<span>           <span class="va">x</span></span>
+<span>         <span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A forest: 26 nodes and 1 feature</span></span>
 <span><span class="co">#&gt; # Trees:</span></span>
 <span><span class="co">#&gt; #   key1 [2]</span></span>
