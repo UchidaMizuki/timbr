@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/UchidaMizuki/timbr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/UchidaMizuki/timbr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-timbr provides data frames for forest (or tree) data structures. 
+timbr provides data frames for forest or tree data structures. 
 You can create forest data structures from data frames and process them based on their hierarchies.
 
 ## Installation

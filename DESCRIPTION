@@ -1,7 +1,7 @@
 Package: timbr
 Type: Package
-Title: Forest Data Frames
-Version: 0.2.1
+Title: Forest/Tree Data Frames
+Version: 0.2.2
 Authors@R: 
     person(
         given = "Mizuki", 
@@ -9,7 +9,7 @@ Authors@R:
         email = "uchidamizuki@vivaldi.net", 
         role = c("aut", "cre")
     )
-Description: Provides data frames for forest (or tree) data structures. You can 
+Description: Provides data frames for forest or tree data structures. You can 
     create forest data structures from data frames and process them based on 
     their hierarchies.
 License: MIT + file LICENSE

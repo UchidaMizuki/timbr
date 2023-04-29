@@ -1,3 +1,9 @@
+# timbr 0.2.2
+
+* Rename `map_forest()` to `traverse` and deprecate `map_forest()`.
+* Update behavior of `as_tbl_graph.forest()`.
+* Update deprecated functions in vctrs.
+
 # timbr 0.2.1
 
 * Rename the argument for `rowwise.forest()`.

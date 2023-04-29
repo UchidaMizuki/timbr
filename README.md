@@ -14,7 +14,7 @@ coverage](https://codecov.io/gh/UchidaMizuki/timbr/branch/main/graph/badge.svg)]
 [![R-CMD-check](https://github.com/UchidaMizuki/timbr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/UchidaMizuki/timbr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-timbr provides data frames for forest (or tree) data structures. You can
+timbr provides data frames for forest or tree data structures. You can
 create forest data structures from data frames and process them based on
 their hierarchies.
 
