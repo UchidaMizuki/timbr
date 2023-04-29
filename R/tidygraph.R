@@ -6,7 +6,7 @@ as_tbl_graph.forest <- function(x,
 
   # edges
   node_parents <- nodes$.$parent
-  locs <- !vec_equal_na(node_parents)
+  locs <- !vec_detect_missing(node_parents)
   edges <- tibble::tibble(from = vec_slice(node_parents, locs),
                           to = vec_slice(vec_seq_along(nodes), locs))
 

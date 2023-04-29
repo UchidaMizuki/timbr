@@ -10,7 +10,7 @@ leaves <- function(data) {
   nodes <- data$nodes
 
   node_parents <- nodes$.$parent
-  node_parents <- vec_slice(node_parents, !vec_equal_na(node_parents))
+  node_parents <- vec_slice(node_parents, !vec_detect_missing(node_parents))
   node_locs <- vec_as_location(-node_parents, vec_size(nodes))
 
   data_root <- data

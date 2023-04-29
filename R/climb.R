@@ -80,7 +80,7 @@ timbr_pull <- function(data, name) {
   # new_roots
   new_root_keys <- drop_node(new_roots)
   new_roots <- cbind_check(new_root_keys,
-                           . = vec_slice(new_node_locs, vec_equal_na(new_nodes$.$parent)))
+                           . = vec_slice(new_node_locs, vec_detect_missing(new_nodes$.$parent)))
 
   if (dplyr::is_grouped_df(new_root_keys)) {
     new_roots <- dplyr::new_grouped_df(new_roots, group_data(new_root_keys))
@@ -99,7 +99,7 @@ timbr_pull_loc <- function(roots, nodes, name) {
   new_root_nodes <- new_roots$.
 
   grps <- vec_group_loc(nodes$parent)
-  grps <- vec_slice(grps, !vec_equal_na(grps$key))
+  grps <- vec_slice(grps, !vec_detect_missing(grps$key))
   grp_keys <- grps$key
 
   node_locs <- integer()
