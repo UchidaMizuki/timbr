@@ -1,4 +1,4 @@
-test_that("map_forest", {
+test_that("traverse", {
   library(dplyr)
 
   fr <- expand.grid(key3 = letters,
@@ -14,7 +14,7 @@ test_that("map_forest", {
     summarise(value1 = sum(value1))
   fr2 <- fr %>%
     summarise() %>%
-    map_forest(function(x, y) {
+    traverse(function(x, y) {
       x$value1 <- sum(y$value1)
       x
     })
@@ -25,7 +25,7 @@ test_that("map_forest", {
     summarise(value1 = first(value1))
   fr2 <- fr %>%
     summarise(value1 = sum(value1)) %>%
-    map_forest(function(x, y) {
+    traverse(function(x, y) {
       x$value1 <- y$value1
       x
     },
@@ -40,7 +40,7 @@ test_that("map_forest", {
     mutate(value1 = NA) %>%
     summarise() %>%
     summarise(value1 = 3) %>%
-    map_forest(function(x, y) {
+    traverse(function(x, y) {
       x$value1 <- y$value1 - 1
       x
     },

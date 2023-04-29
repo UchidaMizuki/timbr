@@ -178,26 +178,26 @@ tree_forest <- function(x) {
                         name = node_names,
                         size = field(group_rle, "length"),
                         children = list(character()))
-  out <- map_forest_impl(out,
-                         function(x, y) {
-                           is_last <- vec_seq_along(y) == vec_size(y)
-                           children <- purrr::pmap(list(y$name, y$size, y$children, is_last),
-                                                   function(name, size, children, is_last) {
-                                                     if (is_last) {
-                                                       prefix_head <- paste0(style$l, style$h)
-                                                       prefix_tail <- "  "
-                                                     } else {
-                                                       prefix_head <- paste0(style$j, style$h)
-                                                       prefix_tail <- paste0(style$v, " ")
-                                                     }
+  out <- traverse_impl(out,
+                       function(x, y) {
+                         is_last <- vec_seq_along(y) == vec_size(y)
+                         children <- purrr::pmap(list(y$name, y$size, y$children, is_last),
+                                                 function(name, size, children, is_last) {
+                                                   if (is_last) {
+                                                     prefix_head <- paste0(style$l, style$h)
+                                                     prefix_tail <- "  "
+                                                   } else {
+                                                     prefix_head <- paste0(style$j, style$h)
+                                                     prefix_tail <- paste0(style$v, " ")
+                                                   }
 
-                                                     c(paste0(prefix_head, name, " [", big_mark(size), "]"),
-                                                       paste0(prefix_tail, children,
-                                                              recycle0 = TRUE))
-                                                   })
-                           x$children <- list(purrr::list_c(children))
-                           x
-                         })
+                                                   c(paste0(prefix_head, name, " [", big_mark(size), "]"),
+                                                     paste0(prefix_tail, children,
+                                                            recycle0 = TRUE))
+                                                 })
+                         x$children <- list(purrr::list_c(children))
+                         x
+                       })
   out <- vec_slice(out, is.na(out$.$parent))
   out <- purrr::pmap(list(out$name, out$size, out$children),
                      function(name, size, children) {
