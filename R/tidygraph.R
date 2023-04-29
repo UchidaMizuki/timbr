@@ -1,7 +1,6 @@
 #' @importFrom tidygraph as_tbl_graph
 #' @export
-as_tbl_graph.forest <- function(x,
-                                node_key = "name", ...) {
+as_tbl_graph.forest <- function(x, ...) {
   nodes <- x$nodes
 
   # edges
@@ -11,8 +10,10 @@ as_tbl_graph.forest <- function(x,
                           to = vec_slice(vec_seq_along(nodes), locs))
 
   # nodes
-  nodes$. <- timbr_node(nodes$.$name, nodes$.$value)
-  names(nodes)[names(nodes) == "."] <- node_key
+  nodes[[".node_name"]] <- nodes$.$name
+  nodes[[".node_value"]] <- nodes$.$value
+  nodes <- nodes[c(".node_name", ".node_value",
+                   setdiff(names(nodes), c(".", ".node_name", ".node_value")))]
 
   tidygraph::tbl_graph(nodes = nodes,
                        edges = edges, ...)
