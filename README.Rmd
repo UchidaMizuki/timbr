@@ -44,7 +44,7 @@ The main functions provided by timbr are as follows,
 - `children()`
 - `climb()`
 - `leaves()`
-- `map_forest()`
+- `traverse()`
 - `rbind()`
 
 ## tidyverse methods
@@ -102,9 +102,9 @@ fr_sum <- fr |>
 
 fr
 fr_sum
-map_forest(fr_sum,
-           function(x, children) {
-             x$value <- prod(children$value)
-             x
-           })
+traverse(fr_sum,
+         function(x, children) {
+           x$value <- prod(children$value)
+           x
+         })
 ```
