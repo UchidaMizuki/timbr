@@ -45,11 +45,23 @@ auto_by_msg <- function(by) {
   paste0("Matching, by = ", by_code)
 }
 
-# from https://github.com/r-lib/cli/blob/main/R/tree.R
+# From: https://github.com/r-lib/cli/blob/main/R/tree.R
 box_chars <- function() {
   if (cli::is_utf8_output()) {
     list(h = "\u2500", v = "\u2502", l = "\u2514", j = "\u251C")
   } else {
     list(h = "-", v = "|", l = "\\", j = "+")
   }
+}
+
+df_roots <- function(x) {
+  roots <- x$roots
+  nodes <- x$nodes
+
+  root_nodes <- vec_slice(nodes, roots$.)
+  roots$. <- timbr_node(root_nodes$.$name, root_nodes$.$value)
+
+  root_nodes <- drop_node(root_nodes)
+  cbind_check(roots,
+              root_nodes)
 }

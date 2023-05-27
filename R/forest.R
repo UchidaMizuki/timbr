@@ -77,16 +77,27 @@ forest_by <- function(.data, ...) {
   as_forest(dplyr::rowwise(.data, ...))
 }
 
-
+#' @export
+dim.forest <- function(x, ...) {
+  dim(x$nodes)
+}
 
 # Printing ----------------------------------------------------------------
 
 #' @export
 format.forest <- function(x, ...) {
+  setup <- tbl_format_setup(x, ...)
+  header <- tbl_format_header(x, setup)
+  body <- tbl_format_body(x, setup)
+  footer <- tbl_format_footer(x, setup)
+  c(header, body, footer)
+}
+
+#' @importFrom pillar tbl_sum
+#' @export
+tbl_sum.forest <- function(x, ...) {
   roots <- x$roots
   nodes <- x$nodes
-
-  root_nodes <- vec_slice(nodes, roots$.)
 
   if (dplyr::is_grouped_df(roots)) {
     group_sum <- tbl_sum(roots)[2]
@@ -94,61 +105,60 @@ format.forest <- function(x, ...) {
     group_sum <- NULL
   }
 
-  # roots
-  roots$. <- timbr_node(root_nodes$.$name, root_nodes$.$value)
+  size_nodes <- vec_size(nodes)
+  size_features <- ncol(nodes) - 1L
 
-  root_nodes <- drop_node(root_nodes)
-  roots <- cbind_check(roots,
-                       root_nodes)
-  roots <- new_data_frame(roots,
-                          size_nodes = vec_size(nodes),
-                          size_features = ncol(root_nodes),
-                          group_sum = group_sum,
-                          tree = tree_forest(x),
-                          is_rowwise = is_rowwise_forest(x), ...,
-                          class = c("tbl_forest", "tbl"))
-  format(roots)
-}
-
-#' @importFrom pillar tbl_sum
-#' @export
-tbl_sum.tbl_forest <- function(x) {
-  size_nodes <- attr(x, "size_nodes")
-  size_features <- attr(x, "size_features")
-
-  node_names <- field(x$., "name")
+  node_names <- field(nodes$., "name")
   size_rle <- rle(node_names)$lengths
 
   out <- c(`A forest` = paste(big_mark(size_nodes), plural("node", size_nodes), "and",
                               big_mark(size_features), plural("feature", size_features)),
-           attr(x, "group_sum"))
-  # Roots = commas(paste0(node_names[cumsum(size_rle)], " [", big_mark(size_rle), "]")))
-
-  if (attr(x, "is_rowwise")) {
+           group_sum,
+           Trees = "",
+           tree_forest(x))
+  if (is_rowwise_forest(x)) {
     out <- c(out,
              Rowwise = "")
   }
-
   out
+}
+
+#' @importFrom pillar tbl_format_setup
+#' @export
+tbl_format_setup.forest <- function(x, ...) {
+  structure(list(x = x,
+                 tbl_sum = tbl_sum(x)),
+            class = "pillar_tbl_format_setup")
 }
 
 #' @importFrom pillar tbl_format_header
 #' @export
-tbl_format_header.tbl_forest <- function(x, setup, ...) {
-  out <- NextMethod()
-  trees <- c(pillar::style_subtle("# Trees:"),
-             pillar::style_subtle(paste0("#   ", attr(x, "tree"))))
+tbl_format_header.forest <- function(x, setup, ...) {
+  tbl_sum <- setup$tbl_sum
+  nms <- rlang::names2(tbl_sum)
+  header <- paste0(dplyr::if_else(nms == "",
+                                  "",
+                                  pillar::align(paste0(nms, ": "))),
+                   dplyr::if_else(nms == "",
+                                  paste0("  ", tbl_sum),
+                                  tbl_sum))
+  pillar::style_subtle(paste0("# ", header))
+}
 
-  if (attr(x, "is_rowwise")) {
-    size <- vec_size(out)
-    out <- c(out[-size],
-             trees,
-             out[[size]])
-  } else {
-    out <- c(out, trees)
-  }
+#' @importFrom pillar tbl_format_body
+#' @export
+tbl_format_body.forest <- function(x, setup, ...) {
+  df_roots <- df_roots(x)
+  tbl_format_body(df_roots,
+                  setup = pillar::tbl_format_setup(df_roots))
+}
 
-  out
+#' @importFrom pillar tbl_format_footer
+#' @export
+tbl_format_footer.forest <- function(x, setup, ...) {
+  df_roots <- df_roots(x)
+  tbl_format_footer(df_roots,
+                    setup = pillar::tbl_format_setup(df_roots))
 }
 
 #' @export
