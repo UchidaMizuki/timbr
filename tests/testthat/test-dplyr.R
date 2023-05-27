@@ -51,3 +51,46 @@ test_that("dplyr", {
                  children(),
                fr)
 })
+
+test_that("rows_update", {
+  library(dplyr)
+
+  fr <- vec_expand_grid(key1 = letters[1:3],
+                        key2 = letters[1:3]) %>%
+    mutate(value = row_number()) %>%
+    forest_by(key1, key2) %>%
+    summarise(value = sum(value))
+
+  df <- vec_expand_grid(key1 = c("c", "a"),
+                        key2 = c("b", "a", "c")) %>%
+    mutate(value = row_number())
+
+  expect_no_error(fr %>%
+                    rows_update(df,
+                                by = c("key1", "key2")) %>%
+                    children())
+  expect_no_error(fr %>%
+                    rows_patch(df,
+                                by = c("key1", "key2")) %>%
+                    children())
+  expect_error(fr %>%
+                 rows_update(df,
+                             by = c("key2", "key1")) %>%
+                 children())
+  expect_error(fr %>%
+                 rows_patch(df,
+                             by = c("key2", "key1")) %>%
+                 children())
+
+  df <- vec_expand_grid(key1 = c("c", "a"),
+                        key2 = c("b", "a", "x")) %>%
+    mutate(value = row_number())
+  expect_error(fr %>%
+                 rows_update(df,
+                             by = c("key1", "key2")) %>%
+                 children())
+  expect_error(fr %>%
+                 rows_patch(df,
+                             by = c("key1", "key2")) %>%
+                 children())
+})

@@ -190,6 +190,9 @@ rows_update_forest <- function(x, y, by, patch) {
   # nodes
   nodes <- x$nodes
   locs <- timbr_match(nodes$., root_nodes, y_nodes, y_locs)
+  stopifnot(
+    setequal(locs$haystacks, vec_seq_along(y))
+  )
 
   # new_data
   new_data <- vec_slice(y, locs$haystacks)
