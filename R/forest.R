@@ -171,23 +171,27 @@ tree_forest <- function(x) {
   style <- box_chars()
 
   node_names <- x$nodes$.$name
-  group_rle <- vec_group_rle(node_names)
+  node_parents <- x$nodes$.$parent
+  parent_node_names <- vec_slice(node_names, node_parents)
+  group_rle <- vec_group_rle(data_frame(node_names = node_names,
+                                        parent_node_names = parent_node_names))
+  # group_rle <- vec_group_rle(node_names)
   seq_along <- vec_seq_along(group_rle)
   node_ids <- vec_rep_each(seq_along, field(group_rle, "length"))
 
-  node_parents <- vec_slice(node_ids, x$nodes$.$parent)
+  node_parents <- vec_slice(node_ids, node_parents)
 
   loc <- vec_match(seq_along, node_ids)
 
   node_names <- vec_slice(node_names, loc)
   node_parents <- vec_slice(node_parents, loc)
 
-  out <- tibble::tibble(. = tibble::tibble(name = node_names,
-                                           value = NA_character_,
-                                           parent = node_parents),
-                        name = node_names,
-                        size = field(group_rle, "length"),
-                        children = list(character()))
+  out <- data_frame(. = data_frame(name = node_names,
+                                   value = NA_character_,
+                                   parent = node_parents),
+                    name = node_names,
+                    size = field(group_rle, "length"),
+                    children = list(character()))
   out <- traverse_impl(out,
                        function(x, y) {
                          is_last <- vec_seq_along(y) == vec_size(y)
