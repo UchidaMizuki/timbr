@@ -51,7 +51,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">climb</span><span class="op">(</span><span class="va">.data</span>, <span class="va">...</span>, .deep <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">climb</span><span class="op">(</span><span class="va">.data</span>, <span class="va">...</span>, .recurse <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">.deep</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -64,8 +64,12 @@
 <dd><p>A list of node names to climb the forest.</p></dd>
 
 
+<dt>.recurse</dt>
+<dd><p>Whether to search recursively by node names or not?</p></dd>
+
+
 <dt>.deep</dt>
-<dd><p>Whether to search deeply for node names or not?</p></dd>
+<dd><p>(Deprecated) Whether to search recursively by node names or not?</p></dd>
 
 </dl></div>
     <div class="section level2">
