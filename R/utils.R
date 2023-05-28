@@ -65,3 +65,5 @@ df_roots <- function(x) {
   cbind_check(roots,
               root_nodes)
 }
+
+vec_match_mem <- memoise::memoise(vec_match)
