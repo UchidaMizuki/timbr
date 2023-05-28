@@ -4,31 +4,48 @@
 #'
 #' @param .data A forest.
 #' @param ... A list of node names to climb the forest.
-#' @param .deep Whether to search deeply for node names or not?
+#' @param .recurse Whether to search recursively by node names or not?
+#' @param .deep (Deprecated) Whether to search recursively by node names or not?
 #'
 #' @return A forest.
 #'
 #' @export
 climb <- function(.data, ...,
-                  .deep = TRUE) {
+                  .recurse = TRUE,
+                  .deep) {
+  if (!missing(.deep)) {
+    lifecycle::deprecate_warn("0.3.0", "climb(.deep)", "climb(.recurse)")
+    .recurse <- .deep
+  }
+
   names <- rlang::enquos(...)
 
+  data <- .data
+  data$nodes <- cbind_check(. = data$nodes$.,
+                            loc = vec_seq_along(data$nodes))
+  data <- timbr_climb(data, names, .recurse)
+  data$nodes <- cbind_check(. = data$nodes$.,
+                            vec_slice(drop_node(.data$nodes), data$nodes$loc))
+  data
+}
+
+timbr_climb <- function(data, names, recurse) {
   if (vec_is_empty(names)) {
-    .data
+    data
   } else {
     name <- rlang::as_name(names[[1L]])
     names <- names[-1L]
 
-    if (.deep) {
-      nodes <- .data$nodes
-      root_nodes <- vec_slice(nodes, .data$roots$.)
+    if (recurse) {
+      nodes <- data$nodes
+      root_nodes <- vec_slice(nodes, data$roots$.)
       root_node_names <- vec_unique(root_nodes$.$name)
 
       frs <- vec_init_along(list(), root_node_names)
 
       for (i in vec_seq_along(root_node_names)) {
         root_node_name <- root_node_names[[i]]
-        fr <- timbr_pull(.data, root_node_name)
+        fr <- timbr_pull(data, root_node_name)
 
         if (root_node_name == name) {
           if (vec_is_empty(names)) {
@@ -50,12 +67,12 @@ climb <- function(.data, ...,
 
       rlang::exec(rbind, !!!frs)
     } else {
-      out <- timbr_pull(.data, name)
+      out <- timbr_pull(data, name)
 
       if (!vec_is_empty(names)) {
         out <- timbr_children(out, name)
         out <- climb(out, !!!names,
-                     .deep = FALSE)
+                     recurse = FALSE)
       }
       out
     }
