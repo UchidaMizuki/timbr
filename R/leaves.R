@@ -27,7 +27,7 @@ leaves <- function(data) {
                         .climb = TRUE)
   needles <- vec_slice(data_root$nodes$root, node_locs)
   new_roots <- vec_slice(roots,
-                         vec_match(needles, roots$.))
+                         vec_match_mem(needles, roots$.))
   new_roots$. <- vec_seq_along(new_roots)
 
   new_nodes <- vec_slice(nodes, node_locs)

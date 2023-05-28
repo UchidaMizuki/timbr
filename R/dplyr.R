@@ -185,7 +185,7 @@ rows_update_forest <- function(x, y, by, patch) {
   grps <- vec_group_loc(as.data.frame(y_roots))
 
   y_locs <- vec_slice(grps$loc,
-                      vec_match(roots[by_roots], grps$key))
+                      vec_match_mem(roots[by_roots], grps$key))
 
   # nodes
   nodes <- x$nodes
