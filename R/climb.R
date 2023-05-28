@@ -52,7 +52,7 @@ timbr_climb <- function(data, names, recurse) {
             frs[[i]] <- fr
           } else {
             fr <- timbr_children(fr, name)
-            frs[[i]] <- climb(fr, !!!names)
+            frs[[i]] <- timbr_climb(fr, names, recurse)
           }
         } else {
           fr <- timbr_children(fr)
@@ -60,7 +60,7 @@ timbr_climb <- function(data, names, recurse) {
           if (vec_is_empty(fr$nodes)) {
             frs[[i]] <- fr
           } else {
-            frs[[i]] <- climb(fr, !!name, !!!names)
+            frs[[i]] <- timbr_climb(fr, c(name, names), recurse)
           }
         }
       }
@@ -71,8 +71,7 @@ timbr_climb <- function(data, names, recurse) {
 
       if (!vec_is_empty(names)) {
         out <- timbr_children(out, name)
-        out <- climb(out, !!!names,
-                     recurse = FALSE)
+        out <- timbr_climb(out, names, recurse)
       }
       out
     }
