@@ -44,7 +44,7 @@ timbr_children <- function(data,
   new_root_nodes <- vec_slice(nodes, new_root_locs)
 
   new_root_keys <- vec_slice(new_root_keys,
-                             vec_match(new_root_nodes$.$parent, roots$.))
+                             vec_match_mem(new_root_nodes$.$parent, roots$.))
 
   new_root_nodes$.$parent <- NA_integer_
   vec_slice(nodes, new_root_locs) <- new_root_nodes
