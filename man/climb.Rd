@@ -4,14 +4,16 @@
 \alias{climb}
 \title{Climb a forest from parents to children}
 \usage{
-climb(.data, ..., .deep = TRUE)
+climb(.data, ..., .recurse = TRUE, .deep)
 }
 \arguments{
 \item{.data}{A forest.}
 
 \item{...}{A list of node names to climb the forest.}
 
-\item{.deep}{Whether to search deeply for node names or not?}
+\item{.recurse}{Whether to search recursively by node names or not?}
+
+\item{.deep}{(Deprecated) Whether to search recursively by node names or not?}
 }
 \value{
 A forest.
