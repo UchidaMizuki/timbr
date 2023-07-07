@@ -31,11 +31,11 @@ as_forest <- function(x, ...) {
 #' @export
 as_forest.rowwise_df <- function(x, ...) {
   grp_vars <- dplyr::group_vars(x)
-  x <- ungroup(x)
+  x <- as.data.frame(ungroup(x))
 
   grps <- x[grp_vars]
   grps <- vec_cast(grps,
-                   tibble::new_tibble(vec_cast_common(!!!grps)))
+                   new_data_frame(vec_cast_common(!!!grps)))
   x <- x[!names(x) %in% grp_vars]
   stopifnot(
     !vec_duplicate_any(grps)
@@ -48,9 +48,9 @@ as_forest.rowwise_df <- function(x, ...) {
   roots <- dplyr::grouped_df(roots, grp_vars[-size_grp_vars])
 
   # nodes
-  node <- tibble::new_tibble(df_list(name = grp_vars[[size_grp_vars]],
-                                     value = grps[[size_grp_vars]],
-                                     parent = NA_integer_))
+  node <- new_data_frame(df_list(name = grp_vars[[size_grp_vars]],
+                                 value = grps[[size_grp_vars]],
+                                 parent = NA_integer_))
   nodes <- cbind_check(. = node,
                        x)
 
