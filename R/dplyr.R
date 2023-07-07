@@ -40,7 +40,7 @@ mutate.forest <- function(.data, ...) {
   new_root_nodes <- drop_cols(new_root_nodes, grp_vars)
 
   new_nodes <- cbind_check(nodes,
-                           vec_init(drop_cols(new_root_nodes, names(nodes))))
+                           vec_init(as.data.frame(drop_cols(new_root_nodes, names(nodes)))))
   new_nodes <- new_nodes[names(new_root_nodes)]
 
   vec_slice(new_nodes, roots$.) <- new_root_nodes
@@ -91,13 +91,13 @@ summarise.forest <- function(.data, ...,
 
   # new nodes
   if (is.null(.node)) {
-    new_root_nodes <- tibble::new_tibble(df_list(name = grp_vars[[ncol_grp_keys]],
-                                                 value = grp_keys[[ncol_grp_keys]],
-                                                 parent = NA_integer_))
+    new_root_nodes <- new_data_frame(df_list(name = grp_vars[[ncol_grp_keys]],
+                                             value = grp_keys[[ncol_grp_keys]],
+                                             parent = NA_integer_))
   } else {
-    new_root_nodes <- tibble::new_tibble(df_list(name = names(.node),
-                                                 value = unname(.node),
-                                                 parent = NA_integer_))
+    new_root_nodes <- new_data_frame(df_list(name = names(.node),
+                                             value = unname(.node),
+                                             parent = NA_integer_))
   }
 
   # summarise
@@ -116,7 +116,7 @@ summarise.forest <- function(.data, ...,
   }
 
   new_root_nodes <- cbind_check(. = new_root_nodes,
-                                drop_cols(new_root_node_data, grp_vars))
+                                as.data.frame(drop_cols(new_root_node_data, grp_vars)))
   new_nodes <- rbind_check(nodes,
                            new_root_nodes)
 
@@ -142,7 +142,7 @@ modify_nodes <- function(f) {
     nodes <- x$nodes
 
     node_data <- drop_node(nodes)
-    new_node_data <- f(node_data, ...)
+    new_node_data <- as.data.frame(f(node_data, ...))
 
     x$nodes <- cbind_check(. = nodes$.,
                            new_node_data)

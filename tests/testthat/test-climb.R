@@ -22,7 +22,7 @@ test_that("climb", {
 
   expect_error(fr %>%
                  climb(key2,
-                       .deep = FALSE))
+                       .recurse = FALSE))
   expect_equal(fr %>%
                  climb(key2) %>%
                  as_tibble() %>%

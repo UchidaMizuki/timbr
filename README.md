@@ -72,7 +72,7 @@ fr_sum <- fr |>
 fr
 #> # A forest: 8 nodes and 1 feature
 #> # Groups:   key1, key2 [4]
-#> # Trees:
+#> # Trees:    
 #> #   key3 [8]
 #>   key1  key2  .        value
 #>   <chr> <chr> <node>   <int>
@@ -86,7 +86,7 @@ fr
 #> 8 b     b     <key3> b     8
 fr_sum
 #> # A forest: 14 nodes and 1 feature
-#> # Trees:
+#> # Trees:    
 #> #   key1 [2]
 #> #   └─key2 [4]
 #> #     └─key3 [8]
@@ -97,7 +97,7 @@ fr_sum
 children(fr_sum)
 #> # A forest: 12 nodes and 1 feature
 #> # Groups:   key1 [2]
-#> # Trees:
+#> # Trees:    
 #> #   key2 [4]
 #> #   └─key3 [8]
 #>   key1  .        value
@@ -109,7 +109,7 @@ children(fr_sum)
 fr_sum |> 
   climb(key3)
 #> # A forest: 8 nodes and 1 feature
-#> # Trees:
+#> # Trees:    
 #> #   key3 [8]
 #>   .        value
 #>   <node>   <int>
@@ -145,7 +145,7 @@ fr_sum <- fr |>
 fr
 #> # A forest: 24 nodes and 1 feature
 #> # Groups:   key1 [2]
-#> # Trees:
+#> # Trees:    
 #> #   key2_1 [4]
 #> #   └─key3_1 [8]
 #> #   key2_2 [4]
@@ -162,7 +162,7 @@ fr
 #> 8 b     <key2_2> b    15
 fr_sum
 #> # A forest: 26 nodes and 1 feature
-#> # Trees:
+#> # Trees:    
 #> #   key1 [2]
 #> #   ├─key2_1 [4]
 #> #   │ └─key3_1 [8]
@@ -178,7 +178,7 @@ traverse(fr_sum,
            x
          })
 #> # A forest: 26 nodes and 1 feature
-#> # Trees:
+#> # Trees:    
 #> #   key1 [2]
 #> #   ├─key2_1 [4]
 #> #   │ └─key3_1 [8]
