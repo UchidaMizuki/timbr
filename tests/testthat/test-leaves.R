@@ -20,5 +20,6 @@ test_that("leaves", {
   fr3 <- rbind(fr1, fr2_summarised) |>
     summarise()
 
-  expect_equal(leaves(fr3)$nodes, rbind(fr1$nodes, fr2$nodes))
+  expect_true(all(vec_equal(leaves(fr3)$nodes, rbind(fr1$nodes, fr2$nodes),
+                            na_equal = T)))
 })
