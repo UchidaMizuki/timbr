@@ -2,15 +2,9 @@
 % Please edit documentation in R/forest.R
 \name{as_forest}
 \alias{as_forest}
-\alias{as_forest.rowwise_df}
-\alias{as_forest.grouped_df}
 \title{Coerce to a forest}
 \usage{
 as_forest(x, ...)
-
-\method{as_forest}{rowwise_df}(x, ...)
-
-\method{as_forest}{grouped_df}(x, ...)
 }
 \arguments{
 \item{x}{An object.}

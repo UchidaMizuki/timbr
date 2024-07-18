@@ -59,10 +59,10 @@ traverse_impl <- function(nodes, .f,
         new_node_data[[j]] <- .f(parents[[j]], children[[j]])
       }
     }
-    new_node_data <- rbind_check(!!!new_node_data)
+    new_node_data <- list_unchop(new_node_data)
 
     if (.climb) {
-      vec_slice(node_data, vec_c(!!!grp_children)) <- new_node_data
+      vec_slice(node_data, list_unchop(grp_children)) <- new_node_data
     } else {
       vec_slice(node_data, grp_parent) <- new_node_data
     }

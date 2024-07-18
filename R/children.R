@@ -35,8 +35,8 @@ timbr_children <- function(data,
   new_root_keys <- drop_node(roots)
 
   if (!is.null(name)) {
-    new_root_keys <- cbind_check(new_root_keys,
-                                 !!name := vec_slice(nodes$.$value, roots$.))
+    new_root_keys <- data_frame(new_root_keys,
+                                !!name := vec_slice(nodes$.$value, roots$.))
   }
 
   # new_nodes
@@ -44,7 +44,7 @@ timbr_children <- function(data,
   new_root_nodes <- vec_slice(nodes, new_root_locs)
 
   new_root_keys <- vec_slice(new_root_keys,
-                             vec_match_mem(new_root_nodes$.$parent, roots$.))
+                             vec_match(new_root_nodes$.$parent, roots$.))
 
   new_root_nodes$.$parent <- vec_init_along(NA_integer_, new_root_nodes)
   vec_slice(nodes, new_root_locs) <- new_root_nodes
@@ -55,10 +55,10 @@ timbr_children <- function(data,
   new_nodes$.$parent <- new_nodes$.$parent + new_node_locs - node_locs
 
   # new_roots
-  new_roots <- cbind_check(new_root_keys,
-                           . = vec_slice(new_node_locs,
-                                         vec_detect_missing(new_nodes$.$parent)))
+  new_roots <- data_frame(new_root_keys,
+                          . = vec_slice(new_node_locs,
+                                        vec_detect_missing(new_nodes$.$parent)))
   new_roots <- dplyr::grouped_df(new_roots, names(new_root_keys))
 
-  forest(new_roots, new_nodes)
+  new_forest(new_roots, new_nodes)
 }

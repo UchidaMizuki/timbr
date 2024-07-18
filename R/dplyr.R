@@ -18,15 +18,15 @@ NULL
 #' @rdname dplyr
 #' @importFrom dplyr mutate
 #' @export
-mutate.forest <- function(.data, ...) {
+mutate.timbr_forest <- function(.data, ...) {
   roots <- .data$roots
   nodes <- .data$nodes
 
   grp_vars <- group_vars(roots)
 
   root_nodes<- vec_slice(nodes, roots$.)
-  root_nodes <- cbind_check(roots[grp_vars],
-                            root_nodes)
+  root_nodes <- data_frame(roots[grp_vars],
+                           root_nodes)
   root_nodes <- dplyr::new_grouped_df(root_nodes, group_data(roots))
 
   if (is_rowwise_forest(.data)) {
@@ -37,10 +37,10 @@ mutate.forest <- function(.data, ...) {
     new_root_nodes <- mutate(root_nodes, ...)
   }
 
-  new_root_nodes <- drop_cols(new_root_nodes, grp_vars)
+  # new_root_nodes <- drop_cols(new_root_nodes, grp_vars)
 
-  new_nodes <- cbind_check(nodes,
-                           vec_init(as.data.frame(drop_cols(new_root_nodes, names(nodes)))))
+  # new_nodes <- data_frame(nodes,
+  #                         vec_init(as.data.frame(drop_cols(new_root_nodes, names(nodes)))))
   new_nodes <- new_nodes[names(new_root_nodes)]
 
   vec_slice(new_nodes, roots$.) <- new_root_nodes
@@ -52,7 +52,7 @@ mutate.forest <- function(.data, ...) {
 #' @rdname dplyr
 #' @importFrom dplyr summarise
 #' @export
-summarise.forest <- function(.data, ...,
+summarise.timbr_forest <- function(.data, ...,
                              .node = NULL) {
   roots <- .data$roots
   nodes <- .data$nodes
@@ -75,12 +75,12 @@ summarise.forest <- function(.data, ...,
   new_root_nodes <- vec_size(nodes) + vec_seq_along(grp_keys)
 
   if (is.null(.node)) {
-    new_roots <- cbind_check(grp_keys[-ncol_grp_keys],
-                             . = new_root_nodes)
+    new_roots <- data_frame(grp_keys[-ncol_grp_keys],
+                            . = new_root_nodes)
     new_roots <- dplyr::grouped_df(new_roots, grp_vars[-ncol_grp_keys])
   } else {
-    new_roots <- cbind_check(grp_keys,
-                             . = new_root_nodes)
+    new_roots <- data_frame(grp_keys,
+                            . = new_root_nodes)
     new_roots <- dplyr::grouped_df(new_roots, grp_vars)
   }
 
@@ -102,7 +102,7 @@ summarise.forest <- function(.data, ...,
 
   # summarise
   root_node_data <- vec_slice(nodes, roots$.)
-  root_node_data <- cbind_check(roots[grp_vars], root_node_data)
+  root_node_data <- data_frame(roots[grp_vars], root_node_data)
   root_node_data <- dplyr::new_grouped_df(root_node_data, group_data(roots))
 
   if (is_rowwise_forest(.data)) {
@@ -115,25 +115,25 @@ summarise.forest <- function(.data, ...,
                                     .groups = "drop")
   }
 
-  new_root_nodes <- cbind_check(. = new_root_nodes,
-                                as.data.frame(drop_cols(new_root_node_data, grp_vars)))
-  new_nodes <- rbind_check(nodes,
-                           new_root_nodes)
+  # new_root_nodes <- data_frame(. = new_root_nodes,
+  #                              as.data.frame(drop_cols(new_root_node_data, grp_vars)))
+  new_nodes <- vec_c(nodes,
+                     new_root_nodes)
 
-  forest(new_roots, new_nodes)
+  new_forest(new_roots, new_nodes)
 }
 
 #' @rdname dplyr
 #' @importFrom dplyr select
 #' @export
-select.forest <- function(.data, ...) {
+select.timbr_forest <- function(.data, ...) {
   modify_nodes(select)(.data, ...)
 }
 
 #' @rdname dplyr
 #' @importFrom dplyr relocate
 #' @export
-relocate.forest <- function(.data, ...) {
+relocate.timbr_forest <- function(.data, ...) {
   modify_nodes(relocate)(.data, ...)
 }
 
@@ -144,8 +144,8 @@ modify_nodes <- function(f) {
     node_data <- drop_node(nodes)
     new_node_data <- as.data.frame(f(node_data, ...))
 
-    x$nodes <- cbind_check(. = nodes$.,
-                           new_node_data)
+    x$nodes <- data_frame(. = nodes$.,
+                          new_node_data)
     x
   }
 }
@@ -153,7 +153,7 @@ modify_nodes <- function(f) {
 #' @rdname dplyr
 #' @importFrom dplyr rows_update
 #' @export
-rows_update.forest <- function(x, y,
+rows_update.timbr_forest <- function(x, y,
                                by = NULL, ...) {
   rows_update_forest(x, y,
                      by = by,
@@ -163,7 +163,7 @@ rows_update.forest <- function(x, y,
 #' @rdname dplyr
 #' @importFrom dplyr rows_patch
 #' @export
-rows_patch.forest <- function(x, y,
+rows_patch.timbr_forest <- function(x, y,
                               by = NULL, ...) {
   rows_update_forest(x, y,
                      by = by,
@@ -185,7 +185,7 @@ rows_update_forest <- function(x, y, by, patch) {
   grps <- vec_group_loc(as.data.frame(y_roots))
 
   y_locs <- vec_slice(grps$loc,
-                      vec_match_mem(roots[by_roots], grps$key))
+                      vec_match(roots[by_roots], grps$key))
 
   # nodes
   nodes <- x$nodes
@@ -293,13 +293,13 @@ timbr_match <- function(needles, needle_locs, haystacks, haystack_locs) {
                               haystack_locs = new_haystack_locs)
     }
   }
-  vec_c(!!!out)
+  list_unchop(out)
 }
 
 #' @rdname dplyr
 #' @importFrom dplyr rowwise
 #' @export
-rowwise.forest <- function(data, ...) {
+rowwise.timbr_forest <- function(data, ...) {
   class(data) <- c("rowwise_forest", class(data))
   data
 }
@@ -311,7 +311,7 @@ is_rowwise_forest <- function(x) {
 #' @rdname dplyr
 #' @importFrom dplyr ungroup
 #' @export
-ungroup.forest <- function(x, ...) {
+ungroup.timbr_forest <- function(x, ...) {
   class(x) <- setdiff(class(x), "rowwise_forest")
   x
 }

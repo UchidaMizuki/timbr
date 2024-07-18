@@ -21,11 +21,11 @@ climb <- function(.data, ...,
   names <- rlang::enquos(...)
 
   data <- .data
-  data$nodes <- cbind_check(. = data$nodes$.,
-                            loc = vec_seq_along(data$nodes))
+  data$nodes <- data_frame(. = data$nodes$.,
+                           loc = vec_seq_along(data$nodes))
   data <- timbr_climb(data, names, .recurse)
-  data$nodes <- cbind_check(. = data$nodes$.,
-                            vec_slice(drop_node(.data$nodes), data$nodes$loc))
+  data$nodes <- data_frame(. = data$nodes$.,
+                           vec_slice(drop_node(.data$nodes), data$nodes$loc))
   data
 }
 
@@ -95,14 +95,14 @@ timbr_pull <- function(data, name) {
 
   # new_roots
   new_root_keys <- drop_node(new_roots)
-  new_roots <- cbind_check(new_root_keys,
-                           . = vec_slice(new_node_locs, vec_detect_missing(new_nodes$.$parent)))
+  new_roots <- data_frame(new_root_keys,
+                          . = vec_slice(new_node_locs, vec_detect_missing(new_nodes$.$parent)))
 
   if (dplyr::is_grouped_df(new_root_keys)) {
     new_roots <- dplyr::new_grouped_df(new_roots, group_data(new_root_keys))
   }
 
-  forest(new_roots, new_nodes)
+  new_forest(new_roots, new_nodes)
 }
 
 timbr_pull_loc <- function(roots, nodes, name) {
@@ -122,7 +122,7 @@ timbr_pull_loc <- function(roots, nodes, name) {
   repeat {
     node_locs <- vec_c(new_root_nodes, node_locs)
     root_grps <- vec_slice(grps, vec_in(grp_keys, new_root_nodes))
-    new_root_nodes <- vec_c(!!!root_grps$loc)
+    new_root_nodes <- list_unchop(root_grps$loc)
     if (vec_is_empty(new_root_nodes)) {
       break
     }

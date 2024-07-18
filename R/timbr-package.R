@@ -13,5 +13,7 @@
 #' @importFrom pillar tbl_format_setup
 #' @importFrom pillar tbl_sum
 #' @importFrom rlang :=
+#' @importFrom vctrs vec_cast
+#' @importFrom vctrs vec_ptype2
 ## usethis namespace: end
 NULL

@@ -2,31 +2,31 @@
 % Please edit documentation in R/dplyr.R
 \name{dplyr}
 \alias{dplyr}
-\alias{mutate.forest}
-\alias{summarise.forest}
-\alias{select.forest}
-\alias{relocate.forest}
-\alias{rows_update.forest}
-\alias{rows_patch.forest}
-\alias{rowwise.forest}
-\alias{ungroup.forest}
+\alias{mutate.timbr_forest}
+\alias{summarise.timbr_forest}
+\alias{select.timbr_forest}
+\alias{relocate.timbr_forest}
+\alias{rows_update.timbr_forest}
+\alias{rows_patch.timbr_forest}
+\alias{rowwise.timbr_forest}
+\alias{ungroup.timbr_forest}
 \title{dplyr methods for forest objects}
 \usage{
-\method{mutate}{forest}(.data, ...)
+\method{mutate}{timbr_forest}(.data, ...)
 
-\method{summarise}{forest}(.data, ..., .node = NULL)
+\method{summarise}{timbr_forest}(.data, ..., .node = NULL)
 
-\method{select}{forest}(.data, ...)
+\method{select}{timbr_forest}(.data, ...)
 
-\method{relocate}{forest}(.data, ...)
+\method{relocate}{timbr_forest}(.data, ...)
 
-\method{rows_update}{forest}(x, y, by = NULL, ...)
+\method{rows_update}{timbr_forest}(x, y, by = NULL, ...)
 
-\method{rows_patch}{forest}(x, y, by = NULL, ...)
+\method{rows_patch}{timbr_forest}(x, y, by = NULL, ...)
 
-\method{rowwise}{forest}(data, ...)
+\method{rowwise}{timbr_forest}(data, ...)
 
-\method{ungroup}{forest}(x, ...)
+\method{ungroup}{timbr_forest}(x, ...)
 }
 \arguments{
 \item{.data}{A forest.}

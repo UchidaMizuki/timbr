@@ -1,6 +1,6 @@
 #' @importFrom tidygraph as_tbl_graph
 #' @export
-as_tbl_graph.forest <- function(x, ...) {
+as_tbl_graph.timbr_forest <- function(x, ...) {
   nodes <- x$nodes
 
   # edges

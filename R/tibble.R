@@ -1,6 +1,6 @@
 #' @importFrom tibble as_tibble
 #' @export
-as_tibble.forest <- function(x, ...) {
+as_tibble.timbr_forest <- function(x, ...) {
   roots <- x$roots
   nodes <- x$nodes
 
@@ -13,8 +13,8 @@ as_tibble.forest <- function(x, ...) {
     rlang::is_scalar_character(root_node_names)
   )
 
-  out <- cbind_check(roots[group_vars(x)],
-                     !!root_node_names := root_node_values,
-                     root_node_data)
+  out <- data_frame(roots[group_vars(x)],
+                    !!root_node_names := root_node_values,
+                    root_node_data)
   as_tibble(out, ...)
 }

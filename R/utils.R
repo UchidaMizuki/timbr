@@ -1,3 +1,71 @@
+get_graph <- function(x) {
+  if (tidygraph::is.tbl_graph(x)) {
+    x
+  } else {
+    x$graph
+  }
+}
+
+get_nodes <- function(x) {
+  tibble::as_tibble(tidygraph::activate(get_graph(x), "nodes"))
+}
+
+get_edges <- function(x) {
+  tibble::as_tibble(tidygraph::activate(get_graph(x), "edges"))
+}
+
+get_root_nodes <- function(x) {
+  roots <- x$roots
+  nodes <- get_nodes(x)
+  tibble::tibble(drop_node(roots),
+                 vctrs::vec_slice(nodes, x$roots$.))
+}
+
+get_parent_node_ids <- function(x) {
+  nodes <- get_nodes(x)
+  edges <- get_edges(x)
+
+  vctrs::vec_slice(edges$from,
+                   vctrs::vec_match(vctrs::vec_seq_along(nodes), edges$to))
+}
+
+get_root_node_ids <- function(x) {
+  get_graph(x) |>
+    tidygraph::activate("nodes") |>
+    dplyr::select() |>
+    dplyr::mutate(id = dplyr::row_number()) |>
+    dplyr::filter(tidygraph::node_is_root()) |>
+    dplyr::pull("id")
+}
+
+drop_node <- function(data) {
+  data[names(data) != "."]
+}
+
+modify_roots <- function(f) {
+  function(x, ...) {
+    f(x$roots, ...)
+  }
+}
+
+modify_nodes <- function(f) {
+  function(.data, ...) {
+    .data$graph <- .data$graph |>
+      tidygraph::activate("nodes") |>
+      f(...)
+    .data
+  }
+}
+
+# From: https://github.com/r-lib/cli/blob/main/R/tree.R
+box_chars <- function() {
+  if (cli::is_utf8_output()) {
+    list(h = "\u2500", v = "\u2502", l = "\u2514", j = "\u251C")
+  } else {
+    list(h = "-", v = "|", l = "\\", j = "+")
+  }
+}
+
 big_mark <- function(x) {
   mark <- if (identical(getOption("OutDec"), ",")) "." else ","
   formatC(x, big.mark = mark)
@@ -8,29 +76,6 @@ plural <- function(x, size) {
     x <- paste0(x, "s")
   }
   x
-}
-
-commas <- function(...) {
-  paste0(...,
-         collapse = ", ")
-}
-
-drop_cols <- function(x, cols) {
-  x[!names(x) %in% cols]
-}
-
-drop_node <- function(x) {
-  drop_cols(x, ".")
-}
-
-cbind_check <- function(...) {
-  vec_cbind(...,
-            .name_repair = "check_unique")
-}
-
-rbind_check <- function(...) {
-  vec_rbind(...,
-            .name_repair = "check_unique")
 }
 
 auto_by_msg <- function(by) {
@@ -44,26 +89,3 @@ auto_by_msg <- function(by) {
 
   paste0("Matching, by = ", by_code)
 }
-
-# From: https://github.com/r-lib/cli/blob/main/R/tree.R
-box_chars <- function() {
-  if (cli::is_utf8_output()) {
-    list(h = "\u2500", v = "\u2502", l = "\u2514", j = "\u251C")
-  } else {
-    list(h = "-", v = "|", l = "\\", j = "+")
-  }
-}
-
-df_roots <- function(x) {
-  roots <- x$roots
-  nodes <- x$nodes
-
-  root_nodes <- vec_slice(nodes, roots$.)
-  roots$. <- timbr_node(root_nodes$.$name, root_nodes$.$value)
-
-  root_nodes <- drop_node(root_nodes)
-  cbind_check(roots,
-              root_nodes)
-}
-
-vec_match_mem <- memoise::memoise(vec_match)
