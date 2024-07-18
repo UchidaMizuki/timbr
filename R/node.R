@@ -1,7 +1,7 @@
 node <- function(name, value) {
-  vctrs::new_rcrd(vctrs::df_list(name = name,
-                                 value = value),
-                  class = "timbr_node")
+  new_rcrd(df_list(name = name,
+                   value = value),
+           class = "timbr_node")
 }
 
 #' Get node names
@@ -12,7 +12,7 @@ node <- function(name, value) {
 #'
 #' @export
 node_name <- function(x) {
-  vctrs::field(x, "name")
+  field(x, "name")
 }
 
 #' Get node values
@@ -23,7 +23,7 @@ node_name <- function(x) {
 #'
 #' @export
 node_value <- function(x) {
-  vctrs::field(x, "value")
+  field(x, "value")
 }
 
 #' @export
@@ -33,8 +33,8 @@ vec_ptype2.timbr_node <- function(x, y, ..., x_arg = "", y_arg = "") {
 
 #' @export
 vec_ptype2.timbr_node.timbr_node <- function(x, y, ..., x_arg = "", y_arg = "") {
-  name <- vctrs::vec_ptype2(node_name(x), node_name(y))
-  value <- vctrs::vec_ptype2(node_value(x), node_value(y))
+  name <- vec_ptype2(node_name(x), node_name(y))
+  value <- vec_ptype2(node_value(x), node_value(y))
   node(name, value)
 }
 
@@ -45,8 +45,8 @@ vec_cast.timbr_node <- function(x, to, ...) {
 
 #' @export
 vec_cast.timbr_node.timbr_node <- function(x, to, ...) {
-  name <- vctrs::vec_cast(node_name(x), node_name(to))
-  value <- vctrs::vec_cast(node_value(x), node_value(to))
+  name <- vec_cast(node_name(x), node_name(to))
+  value <- vec_cast(node_value(x), node_value(to))
   node(name, value)
 }
 

@@ -18,15 +18,15 @@ get_root_nodes <- function(x) {
   roots <- x$roots
   nodes <- get_nodes(x)
   tibble::tibble(drop_node(roots),
-                 vctrs::vec_slice(nodes, x$roots$.))
+                 vec_slice(nodes, x$roots$.))
 }
 
 get_parent_node_ids <- function(x) {
   nodes <- get_nodes(x)
   edges <- get_edges(x)
 
-  vctrs::vec_slice(edges$from,
-                   vctrs::vec_match(vctrs::vec_seq_along(nodes), edges$to))
+  vec_slice(edges$from,
+            vec_match(vec_seq_along(nodes), edges$to))
 }
 
 get_root_node_ids <- function(x) {

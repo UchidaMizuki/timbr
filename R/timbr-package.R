@@ -4,6 +4,7 @@
 ## usethis namespace: start
 #' @import vctrs
 #' @importFrom dplyr mutate
+#' @importFrom dplyr relocate
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise
 #' @importFrom pillar pillar_shaft

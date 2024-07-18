@@ -20,12 +20,12 @@ Imports:
     cli,
     dplyr,
     lifecycle,
-    memoise,
     pillar,
     purrr,
     rlang,
     tibble,
     tidygraph,
+    tidyselect,
     vctrs (>= 0.5.2)
 Suggests: 
     covr,
