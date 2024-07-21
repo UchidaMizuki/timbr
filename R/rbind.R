@@ -1,35 +1,18 @@
 #' @export
 rbind.timbr_forest <- function(...) {
-  frs <- rlang::list2(...)
-  size_frs <- vec_size(frs)
+  dots <- rlang::list2(...)
 
-  new_roots <- vec_init(list(), size_frs)
-  new_nodes <- vec_init(list(), size_frs)
+  graph <- dots |>
+    purrr::map(\(dot) dot$graph) |>
+    purrr::reduce(tidygraph::bind_graphs)
 
-  size_nodes <- 0L
-  for (i in seq_len(size_frs)) {
-    fr <- frs[[i]]
-    roots <- fr$roots
-    nodes <- fr$nodes
+  roots <- dots |>
+    purrr::map(\(dot) dot$roots) |>
+    list_unchop()
+  roots$. <- get_root_node_ids(graph)
 
-    roots$. <- roots$. + size_nodes
-    new_roots[[i]] <- roots
-
-    nodes$.$parent <- nodes$.$parent + size_nodes
-    new_nodes[[i]] <- nodes
-
-    size_nodes <- size_nodes + vec_size(nodes)
-  }
-
-  new_roots <- list_unchop(new_roots)
-  loc <- which(names(new_roots) == ".")
-  new_roots <- new_roots[c(vec_as_location(-loc, ncol(new_roots)), loc)]
-
-  new_nodes <- list_unchop(new_nodes)
-  stopifnot(
-    vec_is_empty(intersect(names(drop_node(new_roots)),
-                           names(drop_node(new_nodes))))
-  )
-
-  # new_forest(new_roots, new_nodes)
+  dot <- dots[[1]]
+  dot$roots <- roots
+  dot$graph <- graph
+  dot
 }
