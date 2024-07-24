@@ -1,6 +1,11 @@
 #' @export
 rbind.timbr_forest <- function(...) {
-  dots <- rlang::list2(...)
+  dots <- rlang::list2(...) |>
+    purrr::compact()
+
+  if (vec_is_empty(dots)) {
+    return(NULL)
+  }
 
   graph <- dots |>
     purrr::map(\(dot) dot$graph) |>

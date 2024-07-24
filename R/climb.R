@@ -19,61 +19,53 @@ climb <- function(.data, ...,
   }
 
   names <- rlang::enquos(...)
-
-  data <- .data
-  data$nodes <- data_frame(. = data$nodes$.,
-                           loc = vec_seq_along(data$nodes))
-  data <- timbr_climb(data, names, .recurse)
-  data$nodes <- data_frame(. = data$nodes$.,
-                           vec_slice(drop_node(.data$nodes), data$nodes$loc))
-  data
+  timbr_climb(.data, names, .recurse)
 }
 
 timbr_climb <- function(data, names, recurse) {
   if (vec_is_empty(names)) {
-    data
-  } else {
-    name <- rlang::as_name(names[[1L]])
-    names <- names[-1L]
+    return(data)
+  }
 
-    if (recurse) {
-      nodes <- data$nodes
-      root_nodes <- vec_slice(nodes, data$roots$.)
-      root_node_names <- vec_unique(root_nodes$.$name)
+  name <- rlang::as_name(names[[1]])
+  names <- names[-1]
 
-      frs <- vec_init_along(list(), root_node_names)
+  if (recurse) {
+    root_nodes <- get_root_nodes(data)
+    root_node_names <- vec_unique(node_name(root_nodes$.))
 
-      for (i in vec_seq_along(root_node_names)) {
-        root_node_name <- root_node_names[[i]]
-        fr <- timbr_pull(data, root_node_name)
+    forests <- vec_init_along(list(), root_node_names)
 
-        if (root_node_name == name) {
-          if (vec_is_empty(names)) {
-            frs[[i]] <- fr
-          } else {
-            fr <- timbr_children(fr, name)
-            frs[[i]] <- timbr_climb(fr, names, recurse)
-          }
+    for (i in vec_seq_along(root_node_names)) {
+      root_node_name <- root_node_names[[i]]
+      forest <- timbr_pull(data, root_node_name)
+
+      if (root_node_name == name) {
+        if (vec_is_empty(names)) {
+          forests[[i]] <- forest
         } else {
-          fr <- timbr_children(fr)
-
-          if (vec_is_empty(fr$nodes)) {
-            frs[[i]] <- fr
-          } else {
-            frs[[i]] <- timbr_climb(fr, c(name, names), recurse)
-          }
+          forest <- children(forest, name)
+          forests[[i]] <- timbr_climb(forest, names, recurse)
         }
-      }
+      } else {
+        forest <- children(forest)
+        forests[[i]] <- timbr_climb(forest, c(name, names), recurse)
 
-      rlang::exec(rbind, !!!frs)
-    } else {
-      out <- timbr_pull(data, name)
-
-      if (!vec_is_empty(names)) {
-        out <- timbr_children(out, name)
-        out <- timbr_climb(out, names, recurse)
+        # if (vec_is_empty(forest$nodes)) {
+        #   forests[[i]] <- forest
+        # } else {
+        #   forests[[i]] <- timbr_climb(forest, c(name, names), recurse)
+        # }
       }
-      out
     }
+    rlang::exec(rbind.timbr_forest, !!!forests)
+  } else {
+    forest <- timbr_pull(data, name)
+
+    if (!vec_is_empty(names)) {
+      forest <- children(forest, name)
+      forest <- timbr_climb(forest, names, recurse)
+    }
+    forest
   }
 }
