@@ -7,7 +7,7 @@ test_that("dplyr", {
     mutate(value = row_number())
   fr <- df %>%
     forest_by(key1, key2, key3)
-  expect_s3_class(fr, "forest")
+  expect_s3_class(fr, "timbr_forest")
 
   df_sum <- df %>%
     group_by(key1, key2) %>%
@@ -17,39 +17,34 @@ test_that("dplyr", {
   fr_sum <- fr %>%
     summarise(value = sum(value))
 
-  expect_equal(as_tibble(fr_sum), df_sum)
-  expect_equal(children(fr_sum), fr)
+  expect_equal(ungroup(as_tibble(fr_sum)), df_sum)
+  expect_equal_forest(children(fr_sum), fr)
 
   fr_sum1 <- fr_sum %>%
     mutate(value1 = value + 1)
 
   loc <- fr_sum1$roots$.
-  expect_equal(vec_slice(fr_sum1$nodes$value1, loc),
-               vec_slice(fr_sum1$nodes$value + 1, loc))
-  expect_true(all(is.na(vec_slice(fr_sum1$nodes$value1,
-                                  vec_as_location(-loc, vec_size(fr_sum1$nodes))))))
-  expect_equal(fr_sum,
-               fr_sum1 %>%
-                 select(!value1))
-
-  fr_sum2 <- fr_sum1 %>%
-    relocate(value1)
-  expect_equal(colnames(fr_sum2$nodes),
-               c(".", "value1", "value"))
+  expect_equal(vec_slice(get_nodes(fr_sum1)$value1, loc),
+               vec_slice(get_nodes(fr_sum)$value + 1, loc))
+  expect_true(all(is.na(vec_slice(get_nodes(fr_sum1)$value1,
+                                  vec_as_location(-loc, vec_size(get_nodes(fr_sum1)))))))
+  expect_equal_forest(fr_sum,
+                      fr_sum1 %>%
+                        select(!value1))
 
   df <- fr %>%
     as_tibble() %>%
     mutate(value = value * 2)
 
-  expect_equal(fr_sum %>%
-                 rows_update(df) %>%
-                 children(),
-               fr %>%
-                 mutate(value = value * 2))
-  expect_equal(fr_sum %>%
-                 rows_patch(df) %>%
-                 children(),
-               fr)
+  expect_equal_forest(fr_sum %>%
+                        rows_update(df) %>%
+                        children(),
+                      fr %>%
+                        mutate(value = value * 2))
+  expect_equal_forest(fr_sum %>%
+                        rows_patch(df) %>%
+                        children(),
+                      fr)
 })
 
 test_that("rows_update", {
