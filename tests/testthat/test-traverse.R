@@ -18,7 +18,7 @@ test_that("traverse", {
       x$value1 <- sum(y$value1)
       x
     })
-  expect_identical(fr1, fr2)
+  expect_equal_forest(fr1, fr2)
 
   fr1 <- fr %>%
     mutate(value1 = sum(value1)) %>%
@@ -30,7 +30,7 @@ test_that("traverse", {
       x
     },
     .climb = TRUE)
-  expect_identical(fr1, fr2)
+  expect_equal_forest(fr1, fr2)
 
   fr1 <- fr %>%
     mutate(value1 = 1) %>%
@@ -45,5 +45,5 @@ test_that("traverse", {
       x
     },
     .climb = TRUE)
-  expect_identical(fr1, fr2)
+  expect_equal_forest(fr1, fr2)
 })

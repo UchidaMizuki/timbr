@@ -14,51 +14,27 @@ children <- function(data,
   name <- rlang::enquo(name)
 
   if (rlang::quo_is_null(name)) {
-    name <- vec_slice(data$nodes$.$name, data$roots$.)
-    name <- vec_unique(name)
-    stopifnot(
-      rlang::is_scalar_character(name)
-    )
-  } else {
-    name <- rlang::as_name(name)
+    root_nodes <- get_root_nodes(data)
+    name <- vec_unique(get_node_name(root_nodes$.))
   }
 
-  data <- timbr_pull(data, name)
-  timbr_children(data, name)
-}
+  data <- timbr_pull(data, {{ name }})
 
-timbr_children <- function(data,
-                           name = NULL) {
-  roots <- data$roots
-  nodes <- data$nodes
+  roots <- get_root_nodes(data)[names(data$roots)]
+  name <- vec_unique(get_node_name(roots$.))
+  roots <- data_frame(drop_node(roots),
+                      !!name := get_node_value(roots$.))
 
-  new_root_keys <- drop_node(roots)
+  root_node_ids <- get_root_node_ids(data)
+  parent_node_ids <- get_parent_node_ids(data) |>
+    purrr::keep(\(x) x %in% root_node_ids)
 
-  if (!is.null(name)) {
-    new_root_keys <- cbind_check(new_root_keys,
-                                 !!name := vec_slice(nodes$.$value, roots$.))
-  }
-
-  # new_nodes
-  new_root_locs <- vec_in(nodes$.$parent, roots$.)
-  new_root_nodes <- vec_slice(nodes, new_root_locs)
-
-  new_root_keys <- vec_slice(new_root_keys,
-                             vec_match_mem(new_root_nodes$.$parent, roots$.))
-
-  new_root_nodes$.$parent <- vec_init_along(NA_integer_, new_root_nodes)
-  vec_slice(nodes, new_root_locs) <- new_root_nodes
-
-  node_locs <- vec_as_location(-roots$., vec_size(nodes))
-  new_nodes <- vec_slice(nodes, node_locs)
-  new_node_locs <- vec_seq_along(new_nodes)
-  new_nodes$.$parent <- new_nodes$.$parent + new_node_locs - node_locs
-
-  # new_roots
-  new_roots <- cbind_check(new_root_keys,
-                           . = vec_slice(new_node_locs,
-                                         vec_detect_missing(new_nodes$.$parent)))
-  new_roots <- dplyr::grouped_df(new_roots, names(new_root_keys))
-
-  forest(new_roots, new_nodes)
+  data$roots <- vec_slice(roots,
+                          vec_match(parent_node_ids, root_node_ids)) |>
+    grouped_df_roots()
+  data$graph <- data$graph |>
+    tidygraph::activate("nodes") |>
+    dplyr::filter(!tidygraph::node_is_root())
+  data$roots$. <- get_root_node_ids(data)
+  data
 }

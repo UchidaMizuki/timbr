@@ -1,317 +1,78 @@
-#' dplyr methods for forest objects
-#'
-#' dplyr methods for forest objects.
-#'
-#' @param .data A forest.
-#' @param data A forest.
-#' @param ... Other arguments.
-#' @param .node `NULL` (default) or a vector to create new nodes.
-#' @param x A forest.
-#' @param y A data frame.
-#' @param by An unnamed character vector giving the key columns.
-#'
-#' @return A forest.
-#'
-#' @name dplyr
-NULL
-
-#' @rdname dplyr
-#' @importFrom dplyr mutate
 #' @export
-mutate.forest <- function(.data, ...) {
-  roots <- .data$roots
-  nodes <- .data$nodes
-
-  grp_vars <- group_vars(roots)
-
-  root_nodes<- vec_slice(nodes, roots$.)
-  root_nodes <- cbind_check(roots[grp_vars],
-                            root_nodes)
-  root_nodes <- dplyr::new_grouped_df(root_nodes, group_data(roots))
-
-  if (is_rowwise_forest(.data)) {
-    root_nodes <- rowwise(root_nodes)
-    new_root_nodes <- mutate(root_nodes, ...)
-    new_root_nodes <- ungroup(new_root_nodes)
-  } else {
-    new_root_nodes <- mutate(root_nodes, ...)
+summarise.timbr_forest <- function(.data, ...,
+                                   .node = NULL) {
+  if (!is.null(.node)) {
+    if (!rlang::is_named(.node)) {
+      .node <- rlang::set_names(.node)
+    }
   }
 
-  new_root_nodes <- drop_cols(new_root_nodes, grp_vars)
+  roots <- .data$roots
+  graph <- .data$graph
 
-  new_nodes <- cbind_check(nodes,
-                           vec_init(as.data.frame(drop_cols(new_root_nodes, names(nodes)))))
-  new_nodes <- new_nodes[names(new_root_nodes)]
+  group_keys <- dplyr::group_keys(roots)
+  group_rows <- dplyr::group_rows(roots)
+  group_vars <- names(group_keys)
+  size_group_vars <- vec_size(group_vars)
 
-  vec_slice(new_nodes, roots$.) <- new_root_nodes
+  nodes <- get_nodes(.data)
+  new_root_nodes <- vec_size(nodes) + vec_seq_along(group_keys)
 
-  .data$nodes <- new_nodes
+  if (is.null(.node)) {
+    new_roots <- data_frame(group_keys[-size_group_vars],
+                            . = new_root_nodes) |>
+      dplyr::grouped_df(group_vars[-size_group_vars])
+  } else {
+    new_roots <- data_frame(group_keys,
+                            . = new_root_nodes) |>
+      dplyr::grouped_df(group_vars)
+  }
+
+  nodes <- data_frame(roots[group_vars],
+                      vec_slice(nodes, roots$.)) |>
+    dplyr::new_grouped_df(dplyr::group_data(roots)) |>
+    dplyr::summarise(...,
+                     .groups = "drop") |>
+    dplyr::select(!dplyr::any_of(group_vars))
+  if (is.null(.node)) {
+    nodes <- data_frame(. = node(name = group_vars[[size_group_vars]],
+                                 value = group_keys[[size_group_vars]]),
+                        nodes)
+  } else {
+    nodes <- data_frame(. = node(name = names(.node),
+                                 value = unname(.node)),
+                        nodes)
+  }
+
+  edges <- data_frame(from = vec_rep_each(new_root_nodes, list_sizes(group_rows)),
+                      to = roots$.[list_unchop(group_rows)]) |>
+    dplyr::arrange(.data$to)
+
+  .data$roots <- new_roots
+  .data$graph <- graph |>
+    tidygraph::bind_nodes(nodes) |>
+    tidygraph::bind_edges(edges)
   .data
 }
 
-#' @rdname dplyr
-#' @importFrom dplyr summarise
 #' @export
-summarise.forest <- function(.data, ...,
-                             .node = NULL) {
+mutate.timbr_forest <- function(.data, ...) {
   roots <- .data$roots
-  nodes <- .data$nodes
 
-  if (!is.null(.node)) {
-    if (!rlang::is_named(.node)) {
-      names(.node) <- .node
-    }
+  root_nodes <- get_root_nodes(.data) |>
+    dplyr::mutate(...) |>
+    dplyr::ungroup() |>
+    dplyr::select(!dplyr::any_of(names(roots)))
 
-    stopifnot(
-      !names(.node) %in% c(names(roots), nodes$.$name)
-    )
-  }
-
-  # roots
-  grp_keys <- group_keys(roots)
-  grp_vars <- names(grp_keys)
-  ncol_grp_keys <- ncol(grp_keys)
-
-  new_root_nodes <- vec_size(nodes) + vec_seq_along(grp_keys)
-
-  if (is.null(.node)) {
-    new_roots <- cbind_check(grp_keys[-ncol_grp_keys],
-                             . = new_root_nodes)
-    new_roots <- dplyr::grouped_df(new_roots, grp_vars[-ncol_grp_keys])
-  } else {
-    new_roots <- cbind_check(grp_keys,
-                             . = new_root_nodes)
-    new_roots <- dplyr::grouped_df(new_roots, grp_vars)
-  }
-
-  # nodes
-  # set parents
-  vec_slice(nodes$.$parent, roots$.) <- list_unchop(vec_chop(new_root_nodes),
-                                                    indices = dplyr::group_rows(roots))
-
-  # new nodes
-  if (is.null(.node)) {
-    new_root_nodes <- new_data_frame(df_list(name = grp_vars[[ncol_grp_keys]],
-                                             value = grp_keys[[ncol_grp_keys]],
-                                             parent = NA_integer_))
-  } else {
-    new_root_nodes <- new_data_frame(df_list(name = names(.node),
-                                             value = unname(.node),
-                                             parent = NA_integer_))
-  }
-
-  # summarise
-  root_node_data <- vec_slice(nodes, roots$.)
-  root_node_data <- cbind_check(roots[grp_vars], root_node_data)
-  root_node_data <- dplyr::new_grouped_df(root_node_data, group_data(roots))
-
-  if (is_rowwise_forest(.data)) {
-    root_node_data <- rowwise(root_node_data)
-    new_root_node_data <- summarise(root_node_data, ...,
-                                    .groups = "drop")
-    new_root_node_data <- ungroup(new_root_node_data)
-  } else {
-    new_root_node_data <- summarise(root_node_data, ...,
-                                    .groups = "drop")
-  }
-
-  new_root_nodes <- cbind_check(. = new_root_nodes,
-                                as.data.frame(drop_cols(new_root_node_data, grp_vars)))
-  new_nodes <- rbind_check(nodes,
-                           new_root_nodes)
-
-  forest(new_roots, new_nodes)
+  .data$graph <- .data$graph |>
+    tidygraph::activate("nodes") |>
+    quiet_focus(dplyr::row_number() %in% roots$.) |>
+    dplyr::mutate(root_nodes) |>
+    tidygraph::unfocus()
+  .data
 }
 
-#' @rdname dplyr
-#' @importFrom dplyr select
 #' @export
-select.forest <- function(.data, ...) {
-  modify_nodes(select)(.data, ...)
-}
-
-#' @rdname dplyr
-#' @importFrom dplyr relocate
-#' @export
-relocate.forest <- function(.data, ...) {
-  modify_nodes(relocate)(.data, ...)
-}
-
-modify_nodes <- function(f) {
-  function(x, ...) {
-    nodes <- x$nodes
-
-    node_data <- drop_node(nodes)
-    new_node_data <- as.data.frame(f(node_data, ...))
-
-    x$nodes <- cbind_check(. = nodes$.,
-                           new_node_data)
-    x
-  }
-}
-
-#' @rdname dplyr
-#' @importFrom dplyr rows_update
-#' @export
-rows_update.forest <- function(x, y,
-                               by = NULL, ...) {
-  rows_update_forest(x, y,
-                     by = by,
-                     patch = FALSE)
-}
-
-#' @rdname dplyr
-#' @importFrom dplyr rows_patch
-#' @export
-rows_patch.forest <- function(x, y,
-                              by = NULL, ...) {
-  rows_update_forest(x, y,
-                     by = by,
-                     patch = TRUE)
-}
-
-rows_update_forest <- function(x, y, by, patch) {
-  by <- timbr_common_by(by, x, y)
-  by_roots <- by$by_roots
-  by_nodes <- by$by_nodes
-
-  y_roots <- y[by_roots]
-  y_nodes <- y[by_nodes]
-  y <- y[!names(y) %in% c(by_roots, by_nodes)]
-
-  # roots
-  roots <- x$roots
-  root_nodes <- roots$.
-  grps <- vec_group_loc(as.data.frame(y_roots))
-
-  y_locs <- vec_slice(grps$loc,
-                      vec_match_mem(roots[by_roots], grps$key))
-
-  # nodes
-  nodes <- x$nodes
-  locs <- timbr_match(nodes$., root_nodes, y_nodes, y_locs)
-  stopifnot(
-    setequal(locs$haystacks, vec_seq_along(y))
-  )
-
-  # new_data
-  new_data <- vec_slice(y, locs$haystacks)
-
-  if (patch) {
-    new_data <- mapply(vec_slice(nodes[names(y)], locs$needles), new_data,
-                       FUN = dplyr::coalesce,
-                       SIMPLIFY = FALSE)
-    new_data <- as_tibble(new_data)
-  }
-
-  vec_slice(nodes[names(y)], locs$needles) <- new_data
-  x$nodes <- nodes
-  x
-}
-
-timbr_common_by <- function(by = NULL,
-                            x, y) {
-  x_root_names <- names(drop_node(x$roots))
-  x_node_names <- rev(vec_unique(x$nodes$.$name))
-
-  y_names <- names(y)
-
-  if (is.null(by)) {
-    by_roots <- intersect(x_root_names, y_names)
-    by_nodes <- intersect(x_node_names, y_names)
-    by <- c(by_roots, by_nodes)
-
-    rlang::inform(auto_by_msg(by))
-  } else {
-    vec_assert(by, character())
-
-    stopifnot(
-      all(by %in% c(x_root_names, x_node_names)),
-      all(by %in% y_names)
-    )
-
-    by_roots <- intersect(by, x_root_names)
-    by_nodes <- intersect(by, x_node_names)
-  }
-
-  stopifnot(
-    !vec_is_empty(by_nodes),
-    !vec_duplicate_any(y[by])
-  )
-
-  list(by_roots = by_roots,
-       by_nodes = by_nodes)
-}
-
-timbr_match <- function(needles, needle_locs, haystacks, haystack_locs) {
-  ncol_haystacks <- ncol(haystacks)
-  haystack_name <- names(haystacks)[[1L]]
-  haystack <- vec_chop(haystacks[[1L]], haystack_locs)
-  new_haystacks <- haystacks[-1L]
-
-  size <- vec_size(needle_locs)
-  out <- vec_init(list(), size)
-
-  for (i in seq_len(size)) {
-    needle_loc <- needle_locs[[i]]
-    needle <- vec_slice(needles, needle_loc)
-
-    if (needle$name == haystack_name) {
-      haystack_loc <- haystack_locs[[i]]
-
-      if (vec_is_empty(haystack_loc)) {
-        new_haystack_locs <- integer()
-      } else {
-        new_haystack_locs <- vec_slice(haystack_loc,
-                                       haystack[[i]] == needle$value)
-      }
-
-      if (ncol_haystacks == 1L) {
-        out[[i]] <- data_frame(needles = needle_loc,
-                               haystacks = new_haystack_locs)
-      } else {
-        new_needle_locs <- which(needles$parent == needle_loc)
-
-        if (!vec_is_empty(new_needle_locs)) {
-          new_haystack_locs <- vec_rep(list(new_haystack_locs),
-                                       vec_size(new_needle_locs))
-
-          out[[i]] <- timbr_match(needles = needles,
-                                  needle_locs = new_needle_locs,
-                                  haystacks = new_haystacks,
-                                  haystack_locs = new_haystack_locs)
-        }
-      }
-    } else {
-      new_needle_locs <- which(needles$parent == needle_loc)
-      new_haystack_locs <- vec_rep(list(haystack_locs[[i]]),
-                                   vec_size(new_needle_locs))
-
-      out[[i]] <- timbr_match(needles = needles,
-                              needle_locs = new_needle_locs,
-                              haystacks = haystacks,
-                              haystack_locs = new_haystack_locs)
-    }
-  }
-  vec_c(!!!out)
-}
-
-#' @rdname dplyr
-#' @importFrom dplyr rowwise
-#' @export
-rowwise.forest <- function(data, ...) {
-  class(data) <- c("rowwise_forest", class(data))
-  data
-}
-
-is_rowwise_forest <- function(x) {
-  inherits(x, "rowwise_forest")
-}
-
-#' @rdname dplyr
-#' @importFrom dplyr ungroup
-#' @export
-ungroup.forest <- function(x, ...) {
-  class(x) <- setdiff(class(x), "rowwise_forest")
-  x
+select.timbr_forest <- function(.data, ...) {
+  modify_nodes(dplyr::select)(.data, ...)
 }

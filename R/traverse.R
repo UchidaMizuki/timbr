@@ -14,59 +14,51 @@ traverse <- function(.x, .f, ...,
                      .climb = FALSE) {
   .f <- purrr::as_mapper(.f, ...)
 
-  .x$nodes <- traverse_impl(.x$nodes, .f,
-                            .climb = .climb)
-  .x
-}
+  nodes <- get_nodes(.x)
 
-traverse_impl <- function(nodes, .f,
-                          .climb = FALSE) {
-  node_names <- nodes$.$name
-  node_parents <- nodes$.$parent
-  node_data <- drop_node(nodes)
+  groups <- vec_group_loc(get_parent_node_ids(.x))
+  groups <- vec_slice(groups, !vec_detect_missing(groups$key))
+  groups <- vec_slice(groups,
+                      vec_order(groups$key,
+                                direction = if (.climb) "desc" else "asc"))
 
-  grps <- vec_group_loc(node_parents)
-  grps <- vec_slice(grps, !vec_detect_missing(grps$key))
-  grps <- vec_slice(grps,
-                    vec_order(grps$key,
-                              direction = if (.climb) "desc" else "asc"))
+  node_names <- get_node_name(nodes$.)
+  group_rle <- vec_group_rle(vec_slice(node_names, groups$key))
+  sizes_group_rle <- field(group_rle, "length")
 
-  rle <- vec_group_rle(vec_slice(node_names, grps$key))
-  sizes_rle <- field(rle, "length")
-  inits_rle <- cumsum(sizes_rle) - sizes_rle
+  loc_start_group_rle <- cumsum(sizes_group_rle) - sizes_group_rle
+  loc_group_rle <- vec_seq_along(sizes_group_rle)
 
-  loc <- vec_seq_along(sizes_rle)
+  for (i in loc_group_rle) {
+    size_group_rle <- sizes_group_rle[[i]]
+    loc_size_group_rle <- seq_len(size_group_rle)
 
-  for (i in loc) {
-    size_rle <- sizes_rle[[i]]
-    rle_locs <- seq_len(size_rle)
+    group <- vec_slice(groups, loc_start_group_rle[[i]] + loc_size_group_rle)
+    group_parent <- group$key
+    group_children <- group$loc
 
-    grp <- vec_slice(grps, inits_rle[[i]] + rle_locs)
-    grp_parent <- grp$key
-    grp_children <- grp$loc
+    parents <- vec_chop(vec_slice(nodes, group_parent))
+    children <- vec_chop(nodes, group_children)
 
-    parents <- vec_slice(node_data, grp_parent)
-    parents <- vec_chop(parents)
+    new_nodes <- vec_init(list_of(.ptype = nodes), size_group_rle)
 
-    children <- vec_chop(node_data, grp_children)
-
-    new_node_data <- vec_init(list_of(.ptype = node_data), size_rle)
-
-    for (j in rle_locs) {
+    for (j in loc_size_group_rle) {
       if (.climb) {
-        new_node_data[[j]] <- .f(children[[j]], parents[[j]])
+        new_nodes[[j]] <- .f(children[[j]], parents[[j]])
       } else {
-        new_node_data[[j]] <- .f(parents[[j]], children[[j]])
+        new_nodes[[j]] <- .f(parents[[j]], children[[j]])
       }
     }
-    new_node_data <- rbind_check(!!!new_node_data)
+    new_nodes <- list_unchop(new_nodes)
 
     if (.climb) {
-      vec_slice(node_data, vec_c(!!!grp_children)) <- new_node_data
+      vec_slice(nodes, list_unchop(group_children)) <- new_nodes
     } else {
-      vec_slice(node_data, grp_parent) <- new_node_data
+      vec_slice(nodes, group_parent) <- new_nodes
     }
   }
-  nodes[-1L] <- node_data
-  nodes
+  .x$graph <- .x$graph |>
+    tidygraph::activate("nodes") |>
+    dplyr::mutate(nodes)
+  .x
 }

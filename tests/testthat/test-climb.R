@@ -13,12 +13,12 @@ test_that("climb", {
     summarise(value = sum(value))
   fr <- rbind(fr1, fr2)
 
-  expect_equal(fr %>%
-                 climb(key1),
-               fr1)
-  expect_equal(fr %>%
-                 climb(key3),
-               fr2)
+  expect_equal_forest(fr %>%
+                        climb(key1),
+                      fr1)
+  expect_equal_forest(fr %>%
+                        climb(key3),
+                      fr2)
 
   expect_error(fr %>%
                  climb(key2,
@@ -29,12 +29,12 @@ test_that("climb", {
                  vec_size(),
                vec_size(as_tibble(children(fr1))) +
                  vec_size(as_tibble(children(fr2))))
-  expect_equal(fr %>%
-                 climb(key1, key2) %>%
-                 summarise(value = sum(value)),
-               fr1)
-  expect_equal(fr %>%
-                 climb(key3, key2) %>%
-                 summarise(value = sum(value)),
-               fr2)
+  expect_equal_forest(fr %>%
+                        climb(key1, key2) %>%
+                        summarise(value = sum(value)),
+                      fr1)
+  expect_equal_forest(fr %>%
+                        climb(key3, key2) %>%
+                        summarise(value = sum(value)),
+                      fr2)
 })

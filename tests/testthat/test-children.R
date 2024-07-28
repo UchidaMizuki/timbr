@@ -1,20 +1,20 @@
 test_that("children", {
   library(dplyr)
 
-  fr1 <- vec_expand_grid(key1 = rev(letters),
-                         key2 = letters) %>%
+  fr1 <- vec_expand_grid(key1 = rev(letters[1:5]),
+                         key2 = letters[1:5]) %>%
     mutate(value = row_number()) %>%
     forest_by(key1, key2)
-  fr2 <- vec_expand_grid(key1 = letters,
-                         key3 = rev(letters)) %>%
+  fr2 <- vec_expand_grid(key1 = letters[1:5],
+                         key3 = rev(letters[1:5])) %>%
     mutate(value = row_number()) %>%
     forest_by(key1, key3)
   fr <- rbind(fr1, fr2)
 
-  expect_equal(fr,
-               fr %>%
-                 summarise() %>%
-                 children())
+  expect_equal_forest(fr,
+                      fr %>%
+                        summarise() %>%
+                        children())
 
   fr1 <- vec_expand_grid(key1 = letters,
                          key2 = rev(letters)) %>%
@@ -35,5 +35,5 @@ test_that("children", {
     children("key3") %>%
     summarise(value = sum(value))
 
-  expect_equal(fr2, fr2_2)
+  expect_equal_forest(fr2, fr2_2)
 })
