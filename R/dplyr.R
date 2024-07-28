@@ -59,12 +59,15 @@ summarise.timbr_forest <- function(.data, ...,
 mutate.timbr_forest <- function(.data, ...) {
   roots <- .data$roots
 
+  root_nodes <- get_root_nodes(.data) |>
+    dplyr::mutate(...) |>
+    dplyr::ungroup() |>
+    dplyr::select(!dplyr::any_of(names(roots)))
+
   .data$graph <- .data$graph |>
     tidygraph::activate("nodes") |>
     tidygraph::focus(dplyr::row_number() %in% roots$.) |>
-    dplyr::mutate(drop_node(roots),
-                  dplyr::pick("."), ...) |>
-    dplyr::select(!dplyr::any_of(names(drop_node(roots)))) |>
+    dplyr::mutate(root_nodes) |>
     tidygraph::unfocus()
   .data
 }

@@ -4,10 +4,7 @@
 \alias{node_value}
 \title{Get node values}
 \usage{
-node_value(x)
-}
-\arguments{
-\item{x}{Nodes.}
+node_value()
 }
 \value{
 A vector.

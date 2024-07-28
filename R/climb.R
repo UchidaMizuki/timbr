@@ -32,7 +32,7 @@ timbr_climb <- function(data, names, recurse) {
 
   if (recurse) {
     root_nodes <- get_root_nodes(data)
-    root_node_names <- vec_unique(node_name(root_nodes$.))
+    root_node_names <- vec_unique(get_node_name(root_nodes$.))
 
     forests <- vec_init_along(list(), root_node_names)
 

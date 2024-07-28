@@ -4,26 +4,30 @@ node <- function(name, value) {
            class = "timbr_node")
 }
 
+get_node_name <- function(x) {
+  field(x, "name")
+}
+
+get_node_value <- function(x) {
+  field(x, "value")
+}
+
 #' Get node names
-#'
-#' @param x Nodes.
 #'
 #' @return A character vector.
 #'
 #' @export
-node_name <- function(x) {
-  field(x, "name")
+node_name <- function() {
+  get_node_name(dplyr::pick(".")$.)
 }
 
 #' Get node values
 #'
-#' @param x Nodes.
-#'
 #' @return A vector.
 #'
 #' @export
-node_value <- function(x) {
-  field(x, "value")
+node_value <- function() {
+  get_node_value(dplyr::pick(".")$.)
 }
 
 #' @export
@@ -33,8 +37,8 @@ vec_ptype2.timbr_node <- function(x, y, ..., x_arg = "", y_arg = "") {
 
 #' @export
 vec_ptype2.timbr_node.timbr_node <- function(x, y, ..., x_arg = "", y_arg = "") {
-  name <- vec_ptype2(node_name(x), node_name(y))
-  value <- vec_ptype2(node_value(x), node_value(y))
+  name <- vec_ptype2(get_node_name(x), get_node_name(y))
+  value <- vec_ptype2(get_node_value(x), get_node_value(y))
   node(name, value)
 }
 
@@ -45,22 +49,22 @@ vec_cast.timbr_node <- function(x, to, ...) {
 
 #' @export
 vec_cast.timbr_node.timbr_node <- function(x, to, ...) {
-  name <- vec_cast(node_name(x), node_name(to))
-  value <- vec_cast(node_value(x), node_value(to))
+  name <- vec_cast(get_node_name(x), get_node_name(to))
+  value <- vec_cast(get_node_value(x), get_node_value(to))
   node(name, value)
 }
 
 #' @export
 pillar_shaft.timbr_node <- function(x, ...) {
-  formatted <- paste0(pillar::align(pillar::style_subtle(paste0("<", node_name(x), "> "))),
-                      node_value(x))
+  formatted <- paste0(pillar::align(pillar::style_subtle(paste0("<", get_node_name(x), "> "))),
+                      get_node_value(x))
   pillar::new_pillar_shaft_simple(formatted,
                                   align = "left")
 }
 
 #' @export
 format.timbr_node <- function(x, ...) {
-  paste0("<", node_name(x), "> ", node_value(x))
+  paste0("<", get_node_name(x), "> ", get_node_value(x))
 }
 
 #' @export

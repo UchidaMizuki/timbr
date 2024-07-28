@@ -15,15 +15,15 @@ children <- function(data,
 
   if (rlang::quo_is_null(name)) {
     root_nodes <- get_root_nodes(data)
-    name <- vec_unique(node_name(root_nodes$.))
+    name <- vec_unique(get_node_name(root_nodes$.))
   }
 
   data <- timbr_pull(data, {{ name }})
 
   roots <- get_root_nodes(data)[names(data$roots)]
-  name <- vec_unique(node_name(roots$.))
+  name <- vec_unique(get_node_name(roots$.))
   roots <- data_frame(drop_node(roots),
-                      !!name := node_value(roots$.))
+                      !!name := get_node_value(roots$.))
 
   root_node_ids <- get_root_node_ids(data)
   parent_node_ids <- get_parent_node_ids(data) |>

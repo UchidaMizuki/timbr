@@ -28,7 +28,7 @@ tbl_sum.timbr_forest <- function(x, ...) {
   size_nodes <- vec_size(nodes)
   size_features <- ncol(nodes) - 1L
 
-  node_names <- node_name(nodes$.)
+  node_names <- get_node_name(nodes$.)
   size_rle <- rle(node_names)$lengths
 
   c(`A forest` = paste(big_mark(size_nodes), plural("node", size_nodes), "and",
@@ -76,7 +76,7 @@ tree_forest <- function(x) {
   style <- box_chars()
 
   nodes <- get_nodes(x)
-  node_names <- node_name(nodes$.)
+  node_names <- get_node_name(nodes$.)
 
   parent_node_ids <- get_parent_node_ids(x)
   parent_node_names <- vec_slice(node_names, parent_node_ids)

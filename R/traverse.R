@@ -15,14 +15,14 @@ traverse <- function(.x, .f, ...,
   .f <- purrr::as_mapper(.f, ...)
 
   nodes <- get_nodes(.x)
-  edges <- get_edges(.x)
 
   groups <- vec_group_loc(get_parent_node_ids(.x))
+  groups <- vec_slice(groups, !vec_detect_missing(groups$key))
   groups <- vec_slice(groups,
                       vec_order(groups$key,
                                 direction = if (.climb) "desc" else "asc"))
 
-  node_names <- node_name(nodes$.)
+  node_names <- get_node_name(nodes$.)
   group_rle <- vec_group_rle(vec_slice(node_names, groups$key))
   sizes_group_rle <- field(group_rle, "length")
 

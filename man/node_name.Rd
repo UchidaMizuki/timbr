@@ -4,10 +4,7 @@
 \alias{node_name}
 \title{Get node names}
 \usage{
-node_name(x)
-}
-\arguments{
-\item{x}{Nodes.}
+node_name()
 }
 \value{
 A character vector.
