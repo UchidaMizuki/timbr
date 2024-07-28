@@ -6,37 +6,26 @@
 #'
 #' @export
 leaves <- function(data) {
-  roots <- data$roots
-  nodes <- data$nodes
+  root_node_ids <- get_root_node_ids(data)
 
-  node_parents <- nodes$.$parent
-  node_parents <- vec_slice(node_parents, !vec_detect_missing(node_parents))
+  data$graph <- data$graph |>
+    tidygraph::activate("nodes") |>
+    dplyr::mutate(.rows = dplyr::row_number())
+  data <- data |>
+    traverse(
+      function(x, y) {
+        x$.rows <- y$.rows
+        x
+      },
+      .climb = TRUE
+    )
+  data$graph <- data$graph |>
+    tidygraph::activate("nodes") |>
+    dplyr::filter(tidygraph::node_is_leaf())
 
-  if (vec_is_empty(node_parents)) {
-    data
-  } else {
-    node_locs <- vec_as_location(-node_parents, vec_size(nodes))
-
-    data_root <- data
-    data_root$nodes <- data_root$nodes["."]
-    root_locs <- roots$.
-    data_root$nodes$root <- vec_init_along(NA_integer_, data_root$nodes)
-    vec_slice(data_root$nodes$root, root_locs) <- root_locs
-
-    data_root <- traverse(data_root,
-                          function(x, y) {
-                            x$root <- y$root
-                            x
-                          },
-                          .climb = TRUE)
-    needles <- vec_slice(data_root$nodes$root, node_locs)
-    new_roots <- vec_slice(roots,
-                           vec_match(needles, roots$.))
-    new_roots$. <- vec_seq_along(new_roots)
-
-    new_nodes <- vec_slice(nodes, node_locs)
-    new_nodes$.$parent <- vec_init_along(NA_integer_, new_nodes)
-
-    new_forest(new_roots, new_nodes)
-  }
+  data$roots <- vec_slice(data$roots,
+                          vec_match(get_nodes(data)$.rows, root_node_ids))
+  data$roots$. <- get_root_node_ids(data)
+  data |>
+    dplyr::select(!".rows")
 }

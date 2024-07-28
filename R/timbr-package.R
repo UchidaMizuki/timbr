@@ -5,6 +5,8 @@
 #' @import vctrs
 #' @importFrom dplyr mutate
 #' @importFrom dplyr relocate
+#' @importFrom dplyr rows_patch
+#' @importFrom dplyr rows_update
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise
 #' @importFrom pillar pillar_shaft

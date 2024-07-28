@@ -6,7 +6,7 @@ test_that("as_forest", {
     mutate(value = 1) %>%
     rowwise(key1, key2)
 
-  expect_s3_class(as_forest(df), "forest")
+  expect_s3_class(as_forest(df), "timbr_forest")
 })
 
 test_that("rbind", {
@@ -24,22 +24,8 @@ test_that("rbind", {
     forest_by(key3, key4) %>%
     summarise(value = sum(value))
 
-  expect_equal(rbind(fr1, rbind(fr1, fr2)),
-               rbind(rbind(fr1, fr1), fr2))
-
-  fr1 <- vec_expand_grid(key1 = 1:2,
-                         key2 = 1:3,
-                         key3 = 1:4) %>%
-    forest_by(key1, key2, key3) %>%
-    summarise()
-  fr2 <- vec_expand_grid(key1 = 1:2,
-                         key2 = 1:3,
-                         key4 = 1:4) %>%
-    forest_by(key1, key2, key4) %>%
-    summarise()
-
-  rbind(fr1, fr2) %>%
-    summarise()
+  expect_equal_forest(rbind(fr1, rbind(fr1, fr2)),
+                      rbind(rbind(fr1, fr1), fr2))
 })
 
 test_that("children-climb", {
@@ -69,10 +55,10 @@ test_that("children-climb", {
               fr2)
   fr_sum <- rbind(fr1_sum, fr2_sum)
 
-  expect_equal(fr_sum %>%
-                 children(),
-               fr)
-  expect_equal(fr_sum %>%
-                 climb(key1, key2, key3),
-               fr1)
+  expect_equal_forest(fr_sum %>%
+                        children(),
+                      fr)
+  expect_equal_forest(fr_sum %>%
+                        climb(key1, key2, key3),
+                      fr1)
 })

@@ -66,7 +66,7 @@ mutate.timbr_forest <- function(.data, ...) {
 
   .data$graph <- .data$graph |>
     tidygraph::activate("nodes") |>
-    tidygraph::focus(dplyr::row_number() %in% roots$.) |>
+    quiet_focus(dplyr::row_number() %in% roots$.) |>
     dplyr::mutate(root_nodes) |>
     tidygraph::unfocus()
   .data
@@ -75,13 +75,4 @@ mutate.timbr_forest <- function(.data, ...) {
 #' @export
 select.timbr_forest <- function(.data, ...) {
   modify_nodes(dplyr::select)(.data, ...)
-}
-
-#' @export
-relocate.timbr_forest <- function(.data, ...,
-                                  .before = NULL,
-                                  .after = NULL) {
-  modify_nodes(dplyr::relocate)(.data, ...,
-                                .before = .before,
-                                .after = .after)
 }

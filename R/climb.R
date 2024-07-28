@@ -48,14 +48,17 @@ timbr_climb <- function(data, names, recurse) {
           forests[[i]] <- timbr_climb(forest, names, recurse)
         }
       } else {
-        forest <- children(forest)
-        forests[[i]] <- timbr_climb(forest, c(name, names), recurse)
+        node_name <- vec_unique(get_node_name(get_root_nodes(forest)$.))
 
-        # if (vec_is_empty(forest$nodes)) {
-        #   forests[[i]] <- forest
-        # } else {
-        #   forests[[i]] <- timbr_climb(forest, c(name, names), recurse)
-        # }
+        forest <- children(forest)
+
+        roots <- forest$roots |>
+          dplyr::ungroup() |>
+          dplyr::select(!dplyr::all_of(node_name))
+        forest$roots <- roots |>
+          grouped_df_roots()
+
+        forests[[i]] <- timbr_climb(forest, c(name, names), recurse)
       }
     }
     rlang::exec(rbind.timbr_forest, !!!forests)

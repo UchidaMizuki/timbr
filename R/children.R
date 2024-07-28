@@ -31,7 +31,7 @@ children <- function(data,
 
   data$roots <- vec_slice(roots,
                           vec_match(parent_node_ids, root_node_ids)) |>
-    dplyr::grouped_df(names(drop_node(roots)))
+    grouped_df_roots()
   data$graph <- data$graph |>
     tidygraph::activate("nodes") |>
     dplyr::filter(!tidygraph::node_is_root())

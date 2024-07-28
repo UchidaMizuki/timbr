@@ -33,10 +33,9 @@ get_parent_node_ids <- function(x) {
 get_root_node_ids <- function(x) {
   get_graph(x) |>
     tidygraph::activate("nodes") |>
-    dplyr::select() |>
-    dplyr::mutate(id = dplyr::row_number()) |>
+    dplyr::mutate(.rows = dplyr::row_number()) |>
     dplyr::filter(tidygraph::node_is_root()) |>
-    dplyr::pull("id")
+    dplyr::pull(".rows")
 }
 
 drop_node <- function(data) {
@@ -58,6 +57,22 @@ modify_nodes <- function(f) {
   }
 }
 
+grouped_df_roots <- function(data, roots) {
+  root_names <- names(drop_node(data))
+
+  if (vec_is_empty(root_names)) {
+    data
+  } else {
+    dplyr::grouped_df(data, root_names)
+  }
+}
+
+quiet_focus <- function(.data, ...) {
+  .data |>
+    purrr::quietly(tidygraph::focus)(...) |>
+    purrr::chuck("result")
+}
+
 # From: https://github.com/r-lib/cli/blob/main/R/tree.R
 box_chars <- function() {
   if (cli::is_utf8_output()) {
@@ -77,16 +92,4 @@ plural <- function(x, size) {
     x <- paste0(x, "s")
   }
   x
-}
-
-auto_by_msg <- function(by) {
-  by_quoted <- encodeString(by, quote = "\"")
-
-  if (length(by_quoted) == 1L) {
-    by_code <- by_quoted
-  } else {
-    by_code <- paste0("c(", paste(by_quoted, collapse = ", "), ")")
-  }
-
-  paste0("Matching, by = ", by_code)
 }
