@@ -48,7 +48,7 @@ timbr provides some tidyverse methods as follows,
 
 - `mutate()`
 - `summarise()`
-- `select()` and `relocate()`
+- `select()`
 - `rows_update()` and `rows_patch()`
 
 ## Examples
@@ -84,6 +84,9 @@ fr
 #> 6 b     a     <key3> b     6
 #> 7 b     b     <key3> a     7
 #> 8 b     b     <key3> b     8
+```
+
+``` r
 fr_sum
 #> # A forest: 14 nodes and 1 feature
 #> # Trees:    
@@ -94,6 +97,9 @@ fr_sum
 #>   <node>   <int>
 #> 1 <key1> a    10
 #> 2 <key1> b    26
+```
+
+``` r
 children(fr_sum)
 #> # A forest: 12 nodes and 1 feature
 #> # Groups:   key1 [2]
@@ -106,6 +112,9 @@ children(fr_sum)
 #> 2 a     <key2> b     7
 #> 3 b     <key2> a    11
 #> 4 b     <key2> b    15
+```
+
+``` r
 fr_sum |> 
   climb(key3)
 #> # A forest: 8 nodes and 1 feature
@@ -160,6 +169,9 @@ fr
 #> 6 a     <key2_2> b     7
 #> 7 b     <key2_2> a    11
 #> 8 b     <key2_2> b    15
+```
+
+``` r
 fr_sum
 #> # A forest: 26 nodes and 1 feature
 #> # Trees:    
@@ -172,6 +184,9 @@ fr_sum
 #>   <node>   <int>
 #> 1 <key1> a    20
 #> 2 <key1> b    52
+```
+
+``` r
 traverse(fr_sum,
          function(x, children) {
            x$value <- prod(children$value)
