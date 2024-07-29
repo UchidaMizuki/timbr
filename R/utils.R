@@ -42,18 +42,9 @@ drop_node <- function(data) {
   data[names(data) != "."]
 }
 
-modify_roots <- function(f) {
+apply_roots <- function(f) {
   function(x, ...) {
     f(x$roots, ...)
-  }
-}
-
-modify_nodes <- function(f) {
-  function(.data, ...) {
-    .data$graph <- .data$graph |>
-      tidygraph::activate("nodes") |>
-      f(...)
-    .data
   }
 }
 

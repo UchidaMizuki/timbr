@@ -74,5 +74,8 @@ mutate.timbr_forest <- function(.data, ...) {
 
 #' @export
 select.timbr_forest <- function(.data, ...) {
-  modify_nodes(dplyr::select)(.data, ...)
+  .data$graph <- .data$graph |>
+    tidygraph::activate("nodes") |>
+    dplyr::select(".", ...)
+  .data
 }
