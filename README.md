@@ -48,7 +48,7 @@ timbr provides some tidyverse methods as follows,
 
 - `mutate()`
 - `summarise()`
-- `select()`
+- `select()` and `relocate()`
 - `rows_update()` and `rows_patch()`
 
 ## Examples
