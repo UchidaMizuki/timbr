@@ -79,3 +79,9 @@ select.timbr_forest <- function(.data, ...) {
     dplyr::select(".", ...)
   .data
 }
+
+#' @export
+relocate.timbr_forest <- function(.data, ...) {
+  .data |>
+    select(..., tidyselect::everything())
+}
