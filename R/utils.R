@@ -19,7 +19,10 @@ get_root_nodes <- function(x) {
   nodes <- get_nodes(x)
   root_nodes <- tibble::tibble(drop_node(roots),
                                vec_slice(nodes, x$roots$.))
-  dplyr::new_grouped_df(root_nodes, dplyr::group_data(x$roots))
+  if (dplyr::is_grouped_df(x$roots)) {
+    root_nodes <- dplyr::new_grouped_df(root_nodes, dplyr::group_data(x$roots))
+  }
+  root_nodes
 }
 
 get_parent_node_ids <- function(x) {
