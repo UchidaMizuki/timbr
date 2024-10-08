@@ -48,6 +48,8 @@ test_that("dplyr", {
 })
 
 test_that("rows_update", {
+  set.seed(1234)
+
   library(dplyr)
 
   fr <- vec_expand_grid(key1 = letters[1:3],
@@ -88,4 +90,25 @@ test_that("rows_update", {
                  rows_patch(df,
                              by = c("key1", "key2")) %>%
                  children())
+
+  fr <- vec_expand_grid(key1 = letters[1:3],
+                        key2 = letters[1:3],
+                        key3 = letters[1:3]) %>%
+    mutate(value = row_number()) %>%
+    forest_by(key1, key2, key3) %>%
+    summarise(value = sum(value))
+  df <- vec_expand_grid(key2 = c("c", "a"),
+                        key3 = c("a", "b", "c")) %>%
+    mutate(value = sample(1:9, n()))
+  fr <- fr %>%
+    rows_update(df,
+                by = c("key2", "key3")) %>%
+    climb(key2, key3) %>%
+    as_tibble() %>%
+    rename(value_object = value) %>%
+    inner_join(df %>%
+                 rename(value_expected = value),
+               by = join_by(key2, key3))
+
+  expect_equal(fr$value_object, fr$value_expected)
 })
