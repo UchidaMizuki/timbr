@@ -46,7 +46,7 @@ timbr_rows <- function(f, x, y, by, ...) {
     tibble::as_tibble() |>
     dplyr::ungroup() |>
     f(y, by, ...) |>
-    dplyr::select(!dplyr::all_of(by))
+    dplyr::select(!dplyr::all_of(c(group_vars(x), by)))
 
   x$graph <- x$graph |>
     tidygraph::activate("nodes") |>
