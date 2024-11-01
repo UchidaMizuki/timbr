@@ -100,7 +100,7 @@ test_that("rows_update", {
   df <- vec_expand_grid(key2 = c("c", "a"),
                         key3 = c("a", "b", "c")) %>%
     mutate(value = sample(1:9, n()))
-  fr <- fr %>%
+  df <- fr %>%
     rows_update(df,
                 by = c("key2", "key3")) %>%
     climb(key2, key3) %>%
@@ -110,5 +110,21 @@ test_that("rows_update", {
                  rename(value_expected = value),
                by = join_by(key2, key3))
 
-  expect_equal(fr$value_object, fr$value_expected)
+  expect_equal(df$value_object, df$value_expected)
+
+  fr <- vec_expand_grid(key1 = letters[1:3],
+                        key2 = letters[1:3],
+                        key3 = letters[1:3]) %>%
+    mutate(value = row_number()) %>%
+    forest_by(key1, key2, key3) %>%
+    summarise(value = sum(value))
+  df <- vec_expand_grid(key1 = c("c", "a")) %>%
+    mutate(value = sample(1:9, n()))
+  expect_equal(fr %>%
+                 rows_update(df,
+                             by = "key1") %>%
+                 get_nodes() %>%
+                 drop_node() %>%
+                 names(),
+               "value")
 })

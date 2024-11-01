@@ -37,16 +37,15 @@ timbr_common_by <- function(by = NULL,
 }
 
 timbr_rows <- function(f, x, y, by, ...) {
-  root_nodes <- get_root_nodes(x)
   x$graph <- x$graph |>
     tidygraph::activate("nodes") |>
     dplyr::mutate(.rows = dplyr::row_number())
   new_nodes <- x |>
-    climb(!!!setdiff(by, names(drop_node(root_nodes)))) |>
+    climb(!!!setdiff(by, group_vars(x))) |>
     tibble::as_tibble() |>
     dplyr::ungroup() |>
     f(y, by, ...) |>
-    dplyr::select(!dplyr::all_of(c(group_vars(x), by)))
+    dplyr::select(dplyr::all_of(c(names(drop_node(get_nodes(x))), ".rows")))
 
   x$graph <- x$graph |>
     tidygraph::activate("nodes") |>
