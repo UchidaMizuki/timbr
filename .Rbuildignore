@@ -1,6 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^README\.Rmd$
 ^LICENSE\.md$
 ^codecov\.yml$
 ^\.github$
@@ -11,3 +10,4 @@
 ^pkgdown$
 ^AGENTS\.md$
 ^\.claude$
+^README\.qmd$

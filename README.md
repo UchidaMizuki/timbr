@@ -1,5 +1,6 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+<!-- README.md is generated from README.qmd. Please edit that file -->
 
 # timbr
 
@@ -59,14 +60,16 @@ library(dplyr)
 ```
 
 ``` r
-fr <- tidyr::expand_grid(key1 = letters[1:2],
-                         key2 = letters[1:2],
-                         key3 = letters[1:2]) |>  
-  mutate(value = row_number()) |> 
+fr <- tidyr::expand_grid(
+  key1 = letters[1:2],
+  key2 = letters[1:2],
+  key3 = letters[1:2]
+) |>
+  mutate(value = row_number()) |>
   forest_by(key1, key2, key3)
 
-fr_sum <- fr |> 
-  summarise(value = sum(value)) |> 
+fr_sum <- fr |>
+  summarise(value = sum(value)) |>
   summarise(value = sum(value))
 
 fr
@@ -84,9 +87,6 @@ fr
 #> 6 b     a     <key3> b     6
 #> 7 b     b     <key3> a     7
 #> 8 b     b     <key3> b     8
-```
-
-``` r
 fr_sum
 #> # A forest: 14 nodes and 1 feature
 #> # Trees:    
@@ -97,9 +97,6 @@ fr_sum
 #>   <node>   <int>
 #> 1 <key1> a    10
 #> 2 <key1> b    26
-```
-
-``` r
 children(fr_sum)
 #> # A forest: 12 nodes and 1 feature
 #> # Groups:   key1 [2]
@@ -112,10 +109,7 @@ children(fr_sum)
 #> 2 a     <key2> b     7
 #> 3 b     <key2> a    11
 #> 4 b     <key2> b    15
-```
-
-``` r
-fr_sum |> 
+fr_sum |>
   climb(key3)
 #> # A forest: 8 nodes and 1 feature
 #> # Trees:    
@@ -133,22 +127,26 @@ fr_sum |>
 ```
 
 ``` r
-fr1 <- tidyr::expand_grid(key1 = letters[1:2], 
-                          key2_1 = letters[1:2],
-                          key3_1 = letters[1:2]) |> 
-  mutate(value = row_number()) |> 
-  forest_by(key1, key2_1, key3_1) |> 
+fr1 <- tidyr::expand_grid(
+  key1 = letters[1:2],
+  key2_1 = letters[1:2],
+  key3_1 = letters[1:2]
+) |>
+  mutate(value = row_number()) |>
+  forest_by(key1, key2_1, key3_1) |>
   summarise(value = sum(value))
 
-fr2 <- tidyr::expand_grid(key1 = letters[1:2], 
-                          key2_2 = letters[1:2],
-                          key3_2 = letters[1:2]) |> 
-  mutate(value = row_number()) |> 
-  forest_by(key1, key2_2, key3_2) |> 
+fr2 <- tidyr::expand_grid(
+  key1 = letters[1:2],
+  key2_2 = letters[1:2],
+  key3_2 = letters[1:2]
+) |>
+  mutate(value = row_number()) |>
+  forest_by(key1, key2_2, key3_2) |>
   summarise(value = sum(value))
 
 fr <- rbind(fr1, fr2)
-fr_sum <- fr |> 
+fr_sum <- fr |>
   summarise(value = sum(value))
 
 fr
@@ -169,9 +167,6 @@ fr
 #> 6 a     <key2_2> b     7
 #> 7 b     <key2_2> a    11
 #> 8 b     <key2_2> b    15
-```
-
-``` r
 fr_sum
 #> # A forest: 26 nodes and 1 feature
 #> # Trees:    
@@ -184,14 +179,10 @@ fr_sum
 #>   <node>   <int>
 #> 1 <key1> a    20
 #> 2 <key1> b    52
-```
-
-``` r
-traverse(fr_sum,
-         function(x, children) {
-           x$value <- prod(children$value)
-           x
-         })
+traverse(fr_sum, function(x, children) {
+  x$value <- prod(children$value)
+  x
+})
 #> # A forest: 26 nodes and 1 feature
 #> # Trees:    
 #> #   key1 [2]

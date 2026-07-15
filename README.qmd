@@ -1,10 +1,13 @@
 ---
-output: github_document
+format:
+  gfm:
+    default-image-extension: ""
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- README.md is generated from README.qmd. Please edit that file -->
 
-```{r, include = FALSE}
+```{r}
+#| include: false
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -22,7 +25,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/UchidaMizuki/timbr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/UchidaMizuki/timbr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-timbr provides data frames for forest or tree data structures. 
+timbr provides data frames for forest or tree data structures.
 You can create forest data structures from data frames and process them based on their hierarchies.
 
 ## Installation
@@ -37,6 +40,7 @@ install.packages("timbr")
 # install.packages("devtools")
 devtools::install_github("UchidaMizuki/timbr")
 ```
+
 ## Main Functions
 
 The main functions provided by timbr are as follows,
@@ -58,53 +62,60 @@ timbr provides some tidyverse methods as follows,
 
 ## Examples
 
-```{r,warning=FALSE,message=FALSE}
+```{r}
+#| warning: false
+#| message: false
 library(timbr)
 library(dplyr)
 ```
 
 ```{r}
-fr <- tidyr::expand_grid(key1 = letters[1:2],
-                         key2 = letters[1:2],
-                         key3 = letters[1:2]) |>  
-  mutate(value = row_number()) |> 
+fr <- tidyr::expand_grid(
+  key1 = letters[1:2],
+  key2 = letters[1:2],
+  key3 = letters[1:2]
+) |>
+  mutate(value = row_number()) |>
   forest_by(key1, key2, key3)
 
-fr_sum <- fr |> 
-  summarise(value = sum(value)) |> 
+fr_sum <- fr |>
+  summarise(value = sum(value)) |>
   summarise(value = sum(value))
 
 fr
 fr_sum
 children(fr_sum)
-fr_sum |> 
+fr_sum |>
   climb(key3)
 ```
 
 ```{r}
-fr1 <- tidyr::expand_grid(key1 = letters[1:2], 
-                          key2_1 = letters[1:2],
-                          key3_1 = letters[1:2]) |> 
-  mutate(value = row_number()) |> 
-  forest_by(key1, key2_1, key3_1) |> 
+fr1 <- tidyr::expand_grid(
+  key1 = letters[1:2],
+  key2_1 = letters[1:2],
+  key3_1 = letters[1:2]
+) |>
+  mutate(value = row_number()) |>
+  forest_by(key1, key2_1, key3_1) |>
   summarise(value = sum(value))
 
-fr2 <- tidyr::expand_grid(key1 = letters[1:2], 
-                          key2_2 = letters[1:2],
-                          key3_2 = letters[1:2]) |> 
-  mutate(value = row_number()) |> 
-  forest_by(key1, key2_2, key3_2) |> 
+fr2 <- tidyr::expand_grid(
+  key1 = letters[1:2],
+  key2_2 = letters[1:2],
+  key3_2 = letters[1:2]
+) |>
+  mutate(value = row_number()) |>
+  forest_by(key1, key2_2, key3_2) |>
   summarise(value = sum(value))
 
 fr <- rbind(fr1, fr2)
-fr_sum <- fr |> 
+fr_sum <- fr |>
   summarise(value = sum(value))
 
 fr
 fr_sum
-traverse(fr_sum,
-         function(x, children) {
-           x$value <- prod(children$value)
-           x
-         })
+traverse(fr_sum, function(x, children) {
+  x$value <- prod(children$value)
+  x
+})
 ```
