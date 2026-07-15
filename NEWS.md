@@ -1,4 +1,4 @@
-# timbr (development version)
+# timbr 0.3.0
 
 * Fixed a bug where forests with grouped root nodes (e.g. those produced by `summarise()`) could error or behave incorrectly in downstream operations.
 * `children()` now gives a clear tidyselect error when a forest's root nodes don't share a single node name, instead of an internal assertion failure.

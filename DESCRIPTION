@@ -1,7 +1,7 @@
 Package: timbr
 Type: Package
 Title: Forest/Tree Data Frames
-Version: 0.2.2.9000
+Version: 0.3.0
 Authors@R: 
     person(
         given = "Mizuki", 
@@ -15,7 +15,9 @@ Description: Provides data frames for forest or tree data structures. You can
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: 
+Depends:
+    R (>= 4.1.0)
+Imports:
     cli,
     dplyr,
     lifecycle,
