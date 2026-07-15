@@ -1,8 +1,8 @@
 test_that("leaves", {
   library(dplyr)
 
-  fr1 <- vec_expand_grid(key1 = rev(letters[1:5]), key2 = letters[1:5]) %>%
-    mutate(value = row_number()) %>%
+  fr1 <- vec_expand_grid(key1 = rev(letters[1:5]), key2 = letters[1:5]) |>
+    mutate(value = row_number()) |>
     forest_by(key1, key2)
 
   expect_equal_forest(leaves(fr1), fr1)
@@ -11,8 +11,8 @@ test_that("leaves", {
     key1 = letters[1:5],
     key2 = rev(letters[1:5]),
     key3 = letters[1:5]
-  ) %>%
-    mutate(value = row_number()) %>%
+  ) |>
+    mutate(value = row_number()) |>
     forest_by(key1, key2, key3)
 
   fr2_summarised <- fr2 |>
