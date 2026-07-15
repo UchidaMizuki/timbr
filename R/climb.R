@@ -10,9 +10,7 @@
 #' @return A forest.
 #'
 #' @export
-climb <- function(.data, ...,
-                  .recurse = TRUE,
-                  .deep) {
+climb <- function(.data, ..., .recurse = TRUE, .deep) {
   if (!missing(.deep)) {
     lifecycle::deprecate_warn("0.3.0", "climb(.deep)", "climb(.recurse)")
     .recurse <- .deep

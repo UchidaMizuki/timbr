@@ -3,8 +3,7 @@ timbr_pull <- function(data, name) {
   root_node_names <- get_node_name(root_nodes$.)
 
   name <- tidyselect::vars_pull(vec_unique(root_node_names), {{ name }})
-  locs <- vec_equal(root_node_names, name,
-                    na_equal = TRUE)
+  locs <- vec_equal(root_node_names, name, na_equal = TRUE)
   new_roots <- vec_slice(data$roots, locs)
   new_root_nodes <- new_roots$.
 

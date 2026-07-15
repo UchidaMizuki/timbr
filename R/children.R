@@ -9,8 +9,7 @@
 #' @return A forest.
 #'
 #' @export
-children <- function(data,
-                     name = NULL) {
+children <- function(data, name = NULL) {
   name <- rlang::enquo(name)
 
   if (rlang::quo_is_null(name)) {
@@ -22,15 +21,13 @@ children <- function(data,
 
   roots <- get_root_nodes(data)[names(data$roots)]
   name <- vec_unique(get_node_name(roots$.))
-  roots <- data_frame(drop_node(roots),
-                      !!name := get_node_value(roots$.))
+  roots <- data_frame(drop_node(roots), !!name := get_node_value(roots$.))
 
   root_node_ids <- get_root_node_ids(data)
   parent_node_ids <- get_parent_node_ids(data) |>
     purrr::keep(\(x) x %in% root_node_ids)
 
-  data$roots <- vec_slice(roots,
-                          vec_match(parent_node_ids, root_node_ids)) |>
+  data$roots <- vec_slice(roots, vec_match(parent_node_ids, root_node_ids)) |>
     grouped_df_roots()
   data$graph <- data$graph |>
     tidygraph::activate("nodes") |>

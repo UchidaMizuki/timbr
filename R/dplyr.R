@@ -1,6 +1,5 @@
 #' @export
-summarise.timbr_forest <- function(.data, ...,
-                                   .node = NULL) {
+summarise.timbr_forest <- function(.data, ..., .node = NULL) {
   if (!is.null(.node)) {
     if (!rlang::is_named(.node)) {
       .node <- rlang::set_names(.node)
@@ -19,33 +18,36 @@ summarise.timbr_forest <- function(.data, ...,
   new_root_nodes <- vec_size(nodes) + vec_seq_along(group_keys)
 
   if (is.null(.node)) {
-    new_roots <- data_frame(group_keys[-size_group_vars],
-                            . = new_root_nodes) |>
+    new_roots <- data_frame(group_keys[-size_group_vars], . = new_root_nodes) |>
       dplyr::grouped_df(group_vars[-size_group_vars])
   } else {
-    new_roots <- data_frame(group_keys,
-                            . = new_root_nodes) |>
+    new_roots <- data_frame(group_keys, . = new_root_nodes) |>
       dplyr::grouped_df(group_vars)
   }
 
-  nodes <- data_frame(roots[group_vars],
-                      vec_slice(nodes, roots$.)) |>
+  nodes <- data_frame(roots[group_vars], vec_slice(nodes, roots$.)) |>
     dplyr::new_grouped_df(dplyr::group_data(roots)) |>
-    dplyr::summarise(...,
-                     .groups = "drop") |>
+    dplyr::summarise(..., .groups = "drop") |>
     dplyr::select(!dplyr::any_of(group_vars))
   if (is.null(.node)) {
-    nodes <- data_frame(. = node(name = group_vars[[size_group_vars]],
-                                 value = group_keys[[size_group_vars]]),
-                        nodes)
+    nodes <- data_frame(
+      . = node(
+        name = group_vars[[size_group_vars]],
+        value = group_keys[[size_group_vars]]
+      ),
+      nodes
+    )
   } else {
-    nodes <- data_frame(. = node(name = names(.node),
-                                 value = unname(.node)),
-                        nodes)
+    nodes <- data_frame(
+      . = node(name = names(.node), value = unname(.node)),
+      nodes
+    )
   }
 
-  edges <- data_frame(from = vec_rep_each(new_root_nodes, list_sizes(group_rows)),
-                      to = roots$.[list_unchop(group_rows)]) |>
+  edges <- data_frame(
+    from = vec_rep_each(new_root_nodes, list_sizes(group_rows)),
+    to = roots$.[list_unchop(group_rows)]
+  ) |>
     dplyr::arrange(.data$to)
 
   .data$roots <- new_roots

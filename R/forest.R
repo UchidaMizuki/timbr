@@ -1,8 +1,8 @@
-new_forest <- function(roots, graph,
-                       class = character()) {
-  structure(list(roots = roots,
-                 graph = graph),
-            class = c(setdiff(class, "timbr_forest"), "timbr_forest"))
+new_forest <- function(roots, graph, class = character()) {
+  structure(
+    list(roots = roots, graph = graph),
+    class = c(setdiff(class, "timbr_forest"), "timbr_forest")
+  )
 }
 
 #' Coerce to a forest
@@ -32,13 +32,16 @@ as_forest.rowwise_df <- function(x, ...) {
   }
 
   size_group_vars <- vec_size(group_vars)
-  roots <- data_frame(groups[-size_group_vars],
-                      . = vec_seq_along(x)) |>
+  roots <- data_frame(groups[-size_group_vars], . = vec_seq_along(x)) |>
     dplyr::grouped_df(group_vars[-size_group_vars])
 
-  nodes <- data_frame(. = node(name = group_vars[[size_group_vars]],
-                               value = groups[[size_group_vars]]),
-                      x)
+  nodes <- data_frame(
+    . = node(
+      name = group_vars[[size_group_vars]],
+      value = groups[[size_group_vars]]
+    ),
+    x
+  )
   graph <- tidygraph::tbl_graph(nodes = nodes)
 
   new_forest(roots, graph, ...)

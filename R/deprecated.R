@@ -10,10 +10,8 @@
 #' @return A forest.
 #'
 #' @export
-map_forest <- function(.x, .f, ...,
-                       .climb = FALSE) {
+map_forest <- function(.x, .f, ..., .climb = FALSE) {
   lifecycle::deprecate_warn("0.3.0", "map_forest()", "traverse()")
 
-  traverse(.x, .f, ...,
-           .climb = .climb)
+  traverse(.x, .f, ..., .climb = .climb)
 }

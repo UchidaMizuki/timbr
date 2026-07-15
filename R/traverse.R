@@ -10,17 +10,17 @@
 #' @return A forest.
 #'
 #' @export
-traverse <- function(.x, .f, ...,
-                     .climb = FALSE) {
+traverse <- function(.x, .f, ..., .climb = FALSE) {
   .f <- purrr::as_mapper(.f, ...)
 
   nodes <- get_nodes(.x)
 
   groups <- vec_group_loc(get_parent_node_ids(.x))
   groups <- vec_slice(groups, !vec_detect_missing(groups$key))
-  groups <- vec_slice(groups,
-                      vec_order(groups$key,
-                                direction = if (.climb) "desc" else "asc"))
+  groups <- vec_slice(
+    groups,
+    vec_order(groups$key, direction = if (.climb) "desc" else "asc")
+  )
 
   node_names <- get_node_name(nodes$.)
   group_rle <- vec_group_rle(vec_slice(node_names, groups$key))

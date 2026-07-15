@@ -17,8 +17,7 @@ get_edges <- function(x) {
 get_root_nodes <- function(x) {
   roots <- x$roots
   nodes <- get_nodes(x)
-  root_nodes <- tibble::tibble(drop_node(roots),
-                               vec_slice(nodes, x$roots$.))
+  root_nodes <- tibble::tibble(drop_node(roots), vec_slice(nodes, x$roots$.))
   if (dplyr::is_grouped_df(x$roots)) {
     root_nodes <- dplyr::new_grouped_df(root_nodes, dplyr::group_data(x$roots))
   }
@@ -29,8 +28,7 @@ get_parent_node_ids <- function(x) {
   nodes <- get_nodes(x)
   edges <- get_edges(x)
 
-  vec_slice(edges$from,
-            vec_match(vec_seq_along(nodes), edges$to))
+  vec_slice(edges$from, vec_match(vec_seq_along(nodes), edges$to))
 }
 
 get_root_node_ids <- function(x) {

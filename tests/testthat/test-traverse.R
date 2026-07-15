@@ -1,13 +1,14 @@
 test_that("traverse", {
   library(dplyr)
 
-  fr <- expand.grid(key3 = letters,
-                    key2 = letters,
-                    key1 = letters,
-                    stringsAsFactors = FALSE) %>%
+  fr <- expand.grid(
+    key3 = letters,
+    key2 = letters,
+    key1 = letters,
+    stringsAsFactors = FALSE
+  ) %>%
     as_tibble() %>%
-    mutate(value1 = row_number(),
-           value2 = NA_integer_) %>%
+    mutate(value1 = row_number(), value2 = NA_integer_) %>%
     forest_by(key1, key2, key3)
 
   fr1 <- fr %>%
@@ -25,11 +26,13 @@ test_that("traverse", {
     summarise(value1 = first(value1))
   fr2 <- fr %>%
     summarise(value1 = sum(value1)) %>%
-    traverse(function(x, y) {
-      x$value1 <- y$value1
-      x
-    },
-    .climb = TRUE)
+    traverse(
+      function(x, y) {
+        x$value1 <- y$value1
+        x
+      },
+      .climb = TRUE
+    )
   expect_equal_forest(fr1, fr2)
 
   fr1 <- fr %>%
@@ -40,10 +43,12 @@ test_that("traverse", {
     mutate(value1 = NA) %>%
     summarise() %>%
     summarise(value1 = 3) %>%
-    traverse(function(x, y) {
-      x$value1 <- y$value1 - 1
-      x
-    },
-    .climb = TRUE)
+    traverse(
+      function(x, y) {
+        x$value1 <- y$value1 - 1
+        x
+      },
+      .climb = TRUE
+    )
   expect_equal_forest(fr1, fr2)
 })

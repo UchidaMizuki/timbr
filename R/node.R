@@ -1,7 +1,5 @@
 node <- function(name, value) {
-  new_rcrd(df_list(name = name,
-                   value = value),
-           class = "timbr_node")
+  new_rcrd(df_list(name = name, value = value), class = "timbr_node")
 }
 
 get_node_name <- function(x) {
@@ -37,7 +35,13 @@ vec_ptype2.timbr_node <- function(x, y, ..., x_arg = "", y_arg = "") {
 }
 
 #' @export
-vec_ptype2.timbr_node.timbr_node <- function(x, y, ..., x_arg = "", y_arg = "") {
+vec_ptype2.timbr_node.timbr_node <- function(
+  x,
+  y,
+  ...,
+  x_arg = "",
+  y_arg = ""
+) {
   name <- vec_ptype2(get_node_name(x), get_node_name(y))
   value <- vec_ptype2(get_node_value(x), get_node_value(y))
   node(name, value)
@@ -58,10 +62,11 @@ vec_cast.timbr_node.timbr_node <- function(x, to, ...) {
 
 #' @export
 pillar_shaft.timbr_node <- function(x, ...) {
-  formatted <- paste0(pillar::align(pillar::style_subtle(paste0("<", get_node_name(x), "> "))),
-                      get_node_value(x))
-  pillar::new_pillar_shaft_simple(formatted,
-                                  align = "left")
+  formatted <- paste0(
+    pillar::align(pillar::style_subtle(paste0("<", get_node_name(x), "> "))),
+    get_node_value(x)
+  )
+  pillar::new_pillar_shaft_simple(formatted, align = "left")
 }
 
 #' @export

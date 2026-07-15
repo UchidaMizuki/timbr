@@ -23,8 +23,10 @@ leaves <- function(data) {
     tidygraph::activate("nodes") |>
     dplyr::filter(tidygraph::node_is_leaf())
 
-  data$roots <- vec_slice(data$roots,
-                          vec_match(get_nodes(data)$.rows, root_node_ids))
+  data$roots <- vec_slice(
+    data$roots,
+    vec_match(get_nodes(data)$.rows, root_node_ids)
+  )
   data$roots$. <- get_root_node_ids(data)
   data |>
     dplyr::select(!".rows")

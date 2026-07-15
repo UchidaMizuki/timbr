@@ -1,25 +1,21 @@
 #' @export
-rows_update.timbr_forest <- function(x, y,
-                                     by = NULL, ...) {
+rows_update.timbr_forest <- function(x, y, by = NULL, ...) {
   by <- timbr_common_by(by, x, y)
   timbr_rows(dplyr::rows_update, x, y, by, ...)
 }
 
 #' @export
-rows_patch.timbr_forest <- function(x, y,
-                                    by = NULL, ...) {
+rows_patch.timbr_forest <- function(x, y, by = NULL, ...) {
   by <- timbr_common_by(by, x, y)
   timbr_rows(dplyr::rows_patch, x, y, by, ...)
 }
 
-timbr_common_by <- function(by = NULL,
-                            x, y) {
+timbr_common_by <- function(by = NULL, x, y) {
   if (!is.null(by)) {
     return(by)
   }
 
-  names_x <- c(names(drop_node(x$roots)),
-               get_node_name(get_nodes(x)$.))
+  names_x <- c(names(drop_node(x$roots)), get_node_name(get_nodes(x)$.))
 
   by <- intersect(names(y), names_x)
 
@@ -27,8 +23,7 @@ timbr_common_by <- function(by = NULL,
   by_quoted <- encodeString(by, quote = "\"")
   if (length(by_quoted) == 1L) {
     by_code <- by_quoted
-  }
-  else {
+  } else {
     by_code <- paste0("c(", paste(by_quoted, collapse = ", "), ")")
   }
   cli::cli_inform("Matching, by = {by_code}")
