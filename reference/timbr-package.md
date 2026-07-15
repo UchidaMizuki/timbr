@@ -17,3 +17,7 @@ Useful links:
 ## Author
 
 **Maintainer**: Mizuki Uchida <uchidamizuki@vivaldi.net>
+
+Authors:
+
+- Mizuki Uchida <uchidamizuki@vivaldi.net>
