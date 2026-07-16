@@ -1,7 +1,10 @@
 # Apply a function hierarchically to a forest
 
-Apply a function hierarchically to a forest in the climbing or
-descending direction.
+**\[defunct\]**
+
+`map_forest()` has been removed. Please use
+[`traverse()`](https://uchidamizuki.github.io/timbr/reference/traverse.md)
+instead.
 
 ## Usage
 

@@ -1,6 +1,6 @@
 # Constructs a forest by one or more variables
 
-\`forest_by()\` constructs a forest by one or more variables.
+`forest_by()` constructs a forest by one or more variables.
 
 ## Usage
 

@@ -13,7 +13,7 @@
 - [`leaves()`](https://uchidamizuki.github.io/timbr/reference/leaves.md)
   : Leaf nodes of a forest
 - [`map_forest()`](https://uchidamizuki.github.io/timbr/reference/map_forest.md)
-  : Apply a function hierarchically to a forest
+  **\[defunct\]** : Apply a function hierarchically to a forest
 - [`node_name()`](https://uchidamizuki.github.io/timbr/reference/node_name.md)
   : Get node names
 - [`node_value()`](https://uchidamizuki.github.io/timbr/reference/node_value.md)

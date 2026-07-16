@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">timbr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,7 +33,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="timbr-development-version">timbr (development version)<a class="anchor" aria-label="anchor" href="#timbr-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.3.0" id="timbr-030">timbr 0.3.0<a class="anchor" aria-label="anchor" href="#timbr-030"></a></h2>
 <ul><li>Fixed a bug where forests with grouped root nodes (e.g. those produced by <code><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise()</a></code>) could error or behave incorrectly in downstream operations.</li>
 <li>
 <code><a href="../reference/children.html">children()</a></code> now gives a clear tidyselect error when a forest’s root nodes don’t share a single node name, instead of an internal assertion failure.</li>
@@ -41,6 +41,8 @@
 <code><a href="../reference/climb.html">climb()</a></code>’s <code>.deep</code> argument has been renamed to <code>.recurse</code> (<code>.deep</code> is now deprecated), and a recursion bug that could corrupt node bookkeeping when climbing multiple levels has been fixed (<a href="https://github.com/UchidaMizuki/timbr/issues/9" class="external-link">#9</a>).</li>
 <li>
 <code><a href="../reference/leaves.html">leaves()</a></code> now correctly returns forests where every node is both root and leaf (e.g. single-level trees), instead of erroring.</li>
+<li>
+<code><a href="../reference/map_forest.html">map_forest()</a></code> is now defunct and throws an error; use <code><a href="../reference/traverse.html">traverse()</a></code> instead (it has been deprecated since timbr 0.2.2).</li>
 <li>
 <code><a href="https://dplyr.tidyverse.org/reference/relocate.html" class="external-link">relocate()</a></code> is now implemented for forests, moving columns while preserving the tree structure.</li>
 <li>

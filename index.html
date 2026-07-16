@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">timbr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -98,14 +98,16 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/UchidaMizuki/timbr" class="external-link">timbr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fr</span> <span class="op">&lt;-</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/expand_grid.html" class="external-link">expand_grid</a></span><span class="op">(</span>key1 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
-<span>                         key2 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
-<span>                         key3 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span>  </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/row_number.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<code class="sourceCode R"><span><span class="va">fr</span> <span class="op">&lt;-</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/expand_grid.html" class="external-link">expand_grid</a></span><span class="op">(</span></span>
+<span>  key1 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
+<span>  key2 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
+<span>  key3 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/row_number.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/forest_by.html">forest_by</a></span><span class="op">(</span><span class="va">key1</span>, <span class="va">key2</span>, <span class="va">key3</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fr_sum</span> <span class="op">&lt;-</span> <span class="va">fr</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span><span class="va">fr_sum</span> <span class="op">&lt;-</span> <span class="va">fr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">fr</span></span>
@@ -122,9 +124,8 @@
 <span><span class="co">#&gt; 5 b     a     &lt;key3&gt; a     5</span></span>
 <span><span class="co">#&gt; 6 b     a     &lt;key3&gt; b     6</span></span>
 <span><span class="co">#&gt; 7 b     b     &lt;key3&gt; a     7</span></span>
-<span><span class="co">#&gt; 8 b     b     &lt;key3&gt; b     8</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fr_sum</span></span>
+<span><span class="co">#&gt; 8 b     b     &lt;key3&gt; b     8</span></span>
+<span><span class="va">fr_sum</span></span>
 <span><span class="co">#&gt; # A forest: 14 nodes and 1 feature</span></span>
 <span><span class="co">#&gt; # Trees:    </span></span>
 <span><span class="co">#&gt; #   key1 [2]</span></span>
@@ -133,9 +134,8 @@
 <span><span class="co">#&gt;   .        value</span></span>
 <span><span class="co">#&gt;   &lt;node&gt;   &lt;int&gt;</span></span>
 <span><span class="co">#&gt; 1 &lt;key1&gt; a    10</span></span>
-<span><span class="co">#&gt; 2 &lt;key1&gt; b    26</span></span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/children.html">children</a></span><span class="op">(</span><span class="va">fr_sum</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 2 &lt;key1&gt; b    26</span></span>
+<span><span class="fu"><a href="reference/children.html">children</a></span><span class="op">(</span><span class="va">fr_sum</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A forest: 12 nodes and 1 feature</span></span>
 <span><span class="co">#&gt; # Groups:   key1 [2]</span></span>
 <span><span class="co">#&gt; # Trees:    </span></span>
@@ -146,9 +146,8 @@
 <span><span class="co">#&gt; 1 a     &lt;key2&gt; a     3</span></span>
 <span><span class="co">#&gt; 2 a     &lt;key2&gt; b     7</span></span>
 <span><span class="co">#&gt; 3 b     &lt;key2&gt; a    11</span></span>
-<span><span class="co">#&gt; 4 b     &lt;key2&gt; b    15</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fr_sum</span> <span class="op">|&gt;</span> </span>
+<span><span class="co">#&gt; 4 b     &lt;key2&gt; b    15</span></span>
+<span><span class="va">fr_sum</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/climb.html">climb</a></span><span class="op">(</span><span class="va">key3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A forest: 8 nodes and 1 feature</span></span>
 <span><span class="co">#&gt; # Trees:    </span></span>
@@ -163,23 +162,27 @@
 <span><span class="co">#&gt; 6 &lt;key3&gt; b     6</span></span>
 <span><span class="co">#&gt; 7 &lt;key3&gt; a     7</span></span>
 <span><span class="co">#&gt; 8 &lt;key3&gt; b     8</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fr1</span> <span class="op">&lt;-</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/expand_grid.html" class="external-link">expand_grid</a></span><span class="op">(</span>key1 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, </span>
-<span>                          key2_1 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
-<span>                          key3_1 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/row_number.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="reference/forest_by.html">forest_by</a></span><span class="op">(</span><span class="va">key1</span>, <span class="va">key2_1</span>, <span class="va">key3_1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fr1</span> <span class="op">&lt;-</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/expand_grid.html" class="external-link">expand_grid</a></span><span class="op">(</span></span>
+<span>  key1 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
+<span>  key2_1 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
+<span>  key3_1 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/row_number.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/forest_by.html">forest_by</a></span><span class="op">(</span><span class="va">key1</span>, <span class="va">key2_1</span>, <span class="va">key3_1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fr2</span> <span class="op">&lt;-</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/expand_grid.html" class="external-link">expand_grid</a></span><span class="op">(</span>key1 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, </span>
-<span>                          key2_2 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
-<span>                          key3_2 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/row_number.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="reference/forest_by.html">forest_by</a></span><span class="op">(</span><span class="va">key1</span>, <span class="va">key2_2</span>, <span class="va">key3_2</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span><span class="va">fr2</span> <span class="op">&lt;-</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/expand_grid.html" class="external-link">expand_grid</a></span><span class="op">(</span></span>
+<span>  key1 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
+<span>  key2_2 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
+<span>  key3_2 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/row_number.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/forest_by.html">forest_by</a></span><span class="op">(</span><span class="va">key1</span>, <span class="va">key2_2</span>, <span class="va">key3_2</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">fr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">fr1</span>, <span class="va">fr2</span><span class="op">)</span></span>
-<span><span class="va">fr_sum</span> <span class="op">&lt;-</span> <span class="va">fr</span> <span class="op">|&gt;</span> </span>
+<span><span class="va">fr_sum</span> <span class="op">&lt;-</span> <span class="va">fr</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">fr</span></span>
@@ -199,9 +202,8 @@
 <span><span class="co">#&gt; 5 a     &lt;key2_2&gt; a     3</span></span>
 <span><span class="co">#&gt; 6 a     &lt;key2_2&gt; b     7</span></span>
 <span><span class="co">#&gt; 7 b     &lt;key2_2&gt; a    11</span></span>
-<span><span class="co">#&gt; 8 b     &lt;key2_2&gt; b    15</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fr_sum</span></span>
+<span><span class="co">#&gt; 8 b     &lt;key2_2&gt; b    15</span></span>
+<span><span class="va">fr_sum</span></span>
 <span><span class="co">#&gt; # A forest: 26 nodes and 1 feature</span></span>
 <span><span class="co">#&gt; # Trees:    </span></span>
 <span><span class="co">#&gt; #   key1 [2]</span></span>
@@ -212,13 +214,11 @@
 <span><span class="co">#&gt;   .        value</span></span>
 <span><span class="co">#&gt;   &lt;node&gt;   &lt;int&gt;</span></span>
 <span><span class="co">#&gt; 1 &lt;key1&gt; a    20</span></span>
-<span><span class="co">#&gt; 2 &lt;key1&gt; b    52</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/traverse.html">traverse</a></span><span class="op">(</span><span class="va">fr_sum</span>,</span>
-<span>         <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">children</span><span class="op">)</span> <span class="op">{</span></span>
-<span>           <span class="va">x</span><span class="op">$</span><span class="va">value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/prod.html" class="external-link">prod</a></span><span class="op">(</span><span class="va">children</span><span class="op">$</span><span class="va">value</span><span class="op">)</span></span>
-<span>           <span class="va">x</span></span>
-<span>         <span class="op">}</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 2 &lt;key1&gt; b    52</span></span>
+<span><span class="fu"><a href="reference/traverse.html">traverse</a></span><span class="op">(</span><span class="va">fr_sum</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">children</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span><span class="op">$</span><span class="va">value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/prod.html" class="external-link">prod</a></span><span class="op">(</span><span class="va">children</span><span class="op">$</span><span class="va">value</span><span class="op">)</span></span>
+<span>  <span class="va">x</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A forest: 26 nodes and 1 feature</span></span>
 <span><span class="co">#&gt; # Trees:    </span></span>
 <span><span class="co">#&gt; #   key1 [2]</span></span>

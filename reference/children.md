@@ -16,7 +16,7 @@ children(data, name = NULL)
 
 - name:
 
-  \`NULL\` (default) or a scalar character specifying the node name of
+  `NULL` (default) or a scalar character specifying the node name of
   child nodes.
 
 ## Value

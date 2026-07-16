@@ -1,6 +1,6 @@
 # Changelog
 
-## timbr (development version)
+## timbr 0.3.0
 
 - Fixed a bug where forests with grouped root nodes (e.g. those produced
   by
@@ -17,6 +17,10 @@
 - [`leaves()`](https://uchidamizuki.github.io/timbr/reference/leaves.md)
   now correctly returns forests where every node is both root and leaf
   (e.g. single-level trees), instead of erroring.
+- [`map_forest()`](https://uchidamizuki.github.io/timbr/reference/map_forest.md)
+  is now defunct and throws an error; use
+  [`traverse()`](https://uchidamizuki.github.io/timbr/reference/traverse.md)
+  instead (it has been deprecated since timbr 0.2.2).
 - [`relocate()`](https://dplyr.tidyverse.org/reference/relocate.html) is
   now implemented for forests, moving columns while preserving the tree
   structure.
