@@ -6,6 +6,17 @@ test_that("as_forest", {
     rowwise(key1, key2)
 
   expect_s3_class(as_forest(df), "timbr_forest")
+
+  expect_equal_forest(
+    as_forest(group_by(ungroup(df), key1, key2)),
+    as_forest(df)
+  )
+
+  df_dup <- df |>
+    ungroup() |>
+    bind_rows(df |> ungroup()) |>
+    rowwise(key1, key2)
+  expect_snapshot(as_forest(df_dup), error = TRUE)
 })
 
 test_that("rbind", {

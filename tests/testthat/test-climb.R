@@ -47,4 +47,28 @@ test_that("climb", {
       summarise(value = sum(value)),
     fr2
   )
+  expect_equal_forest(
+    fr1 |>
+      climb(key1, key2, .recurse = FALSE),
+    fr1 |>
+      climb(key1, key2)
+  )
+})
+
+test_that("climb .deep is deprecated", {
+  library(dplyr)
+
+  fr1 <- vec_expand_grid(key1 = letters, key2 = rev(letters)) |>
+    mutate(value = row_number()) |>
+    forest_by(key1, key2) |>
+    summarise(value = sum(value))
+
+  lifecycle::expect_deprecated(
+    fr1_deep <- fr1 |>
+      climb(key1, .deep = FALSE)
+  )
+  fr1_recurse <- fr1 |>
+    climb(key1, .recurse = FALSE)
+
+  expect_equal_forest(fr1_deep, fr1_recurse)
 })

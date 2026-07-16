@@ -152,6 +152,57 @@ test_that("rows_update", {
   )
 })
 
+test_that("rows_update auto by (single column)", {
+  library(dplyr)
+
+  fr <- vec_expand_grid(key1 = letters[1:2], key2 = "x") |>
+    mutate(value = row_number()) |>
+    forest_by(key1, key2) |>
+    summarise(value = sum(value))
+
+  df <- vec_expand_grid(key1 = letters[1:2]) |>
+    mutate(value = c(10, 20))
+
+  expect_message(
+    fr_updated <- fr |>
+      rows_update(df),
+    "Matching, by = \"key1\""
+  )
+  expect_equal(
+    vec_slice(get_nodes(fr_updated)$value, fr_updated$roots$.),
+    c(10, 20)
+  )
+})
+
+test_that("summarise .node", {
+  library(dplyr)
+
+  df <- vec_expand_grid(key1 = letters[1:2], key2 = letters[1:2]) |>
+    mutate(value = row_number())
+  fr <- df |>
+    forest_by(key1, key2)
+
+  fr_sum <- fr |>
+    summarise(value = sum(value), .node = c(total = "all"))
+
+  df_sum <- df |>
+    group_by(key1) |>
+    summarise(value = sum(value), .groups = "drop")
+
+  expect_equal(group_vars(fr_sum), "key1")
+  expect_equal(ungroup(as_tibble(fr_sum))$value, df_sum$value)
+
+  root_node <- get_root_nodes(fr_sum)$.
+  expect_equal(get_node_name(root_node), rep("total", nrow(df_sum)))
+  expect_equal(get_node_value(root_node), rep("all", nrow(df_sum)))
+
+  fr_sum_unnamed <- fr |>
+    summarise(value = sum(value), .node = "total")
+  root_node_unnamed <- get_root_nodes(fr_sum_unnamed)$.
+  expect_equal(get_node_name(root_node_unnamed), rep("total", nrow(df_sum)))
+  expect_equal(get_node_value(root_node_unnamed), rep("total", nrow(df_sum)))
+})
+
 test_that("relocate", {
   library(dplyr)
 

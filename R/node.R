@@ -31,7 +31,7 @@ node_value <- function() {
 #' @method vec_ptype2 timbr_node
 #' @export
 vec_ptype2.timbr_node <- function(x, y, ..., x_arg = "", y_arg = "") {
-  UseMethod("vec_ptype2.timbr_node")
+  UseMethod("vec_ptype2.timbr_node") # nocov
 }
 
 #' @export
@@ -50,7 +50,7 @@ vec_ptype2.timbr_node.timbr_node <- function(
 #' @method vec_cast timbr_node
 #' @export
 vec_cast.timbr_node <- function(x, to, ...) {
-  UseMethod("vec_cast.timbr_node")
+  UseMethod("vec_cast.timbr_node") # nocov
 }
 
 #' @export
