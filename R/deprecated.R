@@ -1,6 +1,9 @@
 #' Apply a function hierarchically to a forest
 #'
-#' Apply a function hierarchically to a forest in the climbing or descending direction.
+#' @description
+#' `r lifecycle::badge("defunct")`
+#'
+#' `map_forest()` has been removed. Please use [traverse()] instead.
 #'
 #' @param .x A forest
 #' @param .f A function, formula, or vector (not necessarily atomic).
@@ -11,7 +14,5 @@
 #'
 #' @export
 map_forest <- function(.x, .f, ..., .climb = FALSE) {
-  lifecycle::deprecate_warn("0.3.0", "map_forest()", "traverse()")
-
-  traverse(.x, .f, ..., .climb = .climb)
+  lifecycle::deprecate_stop("0.3.0", "map_forest()", "traverse()")
 }

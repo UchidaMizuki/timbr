@@ -9,7 +9,7 @@ children(data, name = NULL)
 \arguments{
 \item{data}{A forest.}
 
-\item{name}{`NULL` (default) or a scalar character specifying the node name
+\item{name}{\code{NULL} (default) or a scalar character specifying the node name
 of child nodes.}
 }
 \value{

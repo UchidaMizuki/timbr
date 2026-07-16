@@ -15,5 +15,5 @@ forest_by(.data, ...)
 A forest.
 }
 \description{
-`forest_by()` constructs a forest by one or more variables.
+\code{forest_by()} constructs a forest by one or more variables.
 }

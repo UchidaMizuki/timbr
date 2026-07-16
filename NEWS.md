@@ -4,6 +4,7 @@
 * `children()` now gives a clear tidyselect error when a forest's root nodes don't share a single node name, instead of an internal assertion failure.
 * `climb()`'s `.deep` argument has been renamed to `.recurse` (`.deep` is now deprecated), and a recursion bug that could corrupt node bookkeeping when climbing multiple levels has been fixed (#9).
 * `leaves()` now correctly returns forests where every node is both root and leaf (e.g. single-level trees), instead of erroring.
+* `map_forest()` is now defunct and throws an error; use `traverse()` instead (it has been deprecated since timbr 0.2.2).
 * `relocate()` is now implemented for forests, moving columns while preserving the tree structure.
 * `rows_patch()` and `rows_update()` are now implemented for forests, with fixes to `by`-column matching and error messages (#20).
 * `select()` for forests now always preserves the internal node column, so selecting feature columns no longer breaks the tree structure.

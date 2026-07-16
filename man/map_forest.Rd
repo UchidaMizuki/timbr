@@ -19,5 +19,7 @@ map_forest(.x, .f, ..., .climb = FALSE)
 A forest.
 }
 \description{
-Apply a function hierarchically to a forest in the climbing or descending direction.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#defunct}{\figure{lifecycle-defunct.svg}{options: alt='[Defunct]'}}}{\strong{[Defunct]}}
+
+\code{map_forest()} has been removed. Please use \code{\link[=traverse]{traverse()}} instead.
 }
