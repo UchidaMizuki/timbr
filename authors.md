@@ -7,7 +7,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/UchidaMizuki/timbr/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/UchidaMizuki/timbr/blob/v0.3.0/DESCRIPTION)
 
 Uchida M (2026). *timbr: Forest/Tree Data Frames*. R package version
 0.3.0, <https://github.com/UchidaMizuki/timbr>.

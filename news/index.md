@@ -2,6 +2,8 @@
 
 ## timbr 0.3.0
 
+CRAN release: 2026-07-16
+
 - Fixed a bug where forests with grouped root nodes (e.g. those produced
   by
   [`summarise()`](https://dplyr.tidyverse.org/reference/summarise.html))
