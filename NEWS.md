@@ -1,3 +1,5 @@
+# timbr (development version)
+
 # timbr 0.3.0
 
 * Fixed a bug where forests with grouped root nodes (e.g. those produced by `summarise()`) could error or behave incorrectly in downstream operations.
