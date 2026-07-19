@@ -1,0 +1,175 @@
+---
+title: "Introduction to timbr"
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: '#>'
+---
+
+```{r}
+#| label: setup
+#| message: false
+library(timbr)
+library(dplyr)
+```
+
+Hierarchical data usually lives in a flat data frame with one column per
+level: sales by region, store, and product; energy demand by region, sector,
+and fuel; cost breakdowns by assembly and part. dplyr handles one level of
+aggregation naturally, but each `summarise()` returns a new, flat data frame.
+After aggregating, you no longer know how the levels relate to each other, and
+computations that need both parents and children -- rollups with losses,
+top-down allocations, scenario propagation -- turn into a dance of repeated
+joins.
+
+timbr keeps the whole hierarchy in a single object called a **forest**. A
+forest is built from a data frame, prints like one, and supports familiar
+dplyr verbs -- but its rows are nodes of trees, so aggregating adds parent
+nodes instead of throwing the structure away.
+
+This article walks through the basics with a small energy demand dataset:
+
+```{r}
+energy <- tribble(
+  ~region , ~sector     , ~fuel         , ~demand ,
+  "north" , "household" , "electricity" ,      20 ,
+  "north" , "household" , "gas"         ,      25 ,
+  "north" , "industry"  , "electricity" ,      30 ,
+  "north" , "industry"  , "gas"         ,      45 ,
+  "south" , "household" , "electricity" ,      40 ,
+  "south" , "household" , "gas"         ,      15 ,
+  "south" , "industry"  , "electricity" ,      60 ,
+  "south" , "industry"  , "gas"         ,      30
+)
+```
+
+## From data frame to forest
+
+`forest_by()` works like `dplyr::group_by()`: you list the columns that define
+the hierarchy, from the top level down. The last column becomes the nodes of
+the forest, and the remaining columns become groups:
+
+```{r}
+fr <- energy |>
+  forest_by(region, sector, fuel)
+fr
+```
+
+The `.` column shows each node's name and value (here, `fuel` nodes). The
+other columns -- called **features** -- hold the data attached to each node,
+like `demand` here.
+
+## Hierarchical aggregation
+
+`summarise()` on a forest looks just like `summarise()` on a grouped data
+frame. The difference is that instead of discarding the `fuel` level, it adds
+parent nodes on top of it:
+
+```{r}
+fr_sector <- fr |>
+  summarise(demand = sum(demand))
+fr_sector
+```
+
+The header now shows the tree structure: `sector` nodes with `fuel` children.
+Summarise again to add a `region` level:
+
+```{r}
+fr_region <- fr_sector |>
+  summarise(demand = sum(demand))
+fr_region
+```
+
+The forest prints its root nodes, but every level is still there -- nothing
+has been lost along the way.
+
+## Moving around the hierarchy
+
+`children()` steps down one level, turning the current roots into groups:
+
+```{r}
+children(fr_region)
+```
+
+`climb()` jumps to a named level anywhere in the forest:
+
+```{r}
+fr_region |>
+  climb(fuel)
+```
+
+And `leaves()` returns the terminal nodes:
+
+```{r}
+leaves(fr_region)
+```
+
+## Combining forests
+
+Real hierarchies are often ragged: different branches have different levels.
+Suppose transport demand is broken down by mode instead of sector and fuel.
+`rbind()` combines forests, and a further `summarise()` joins them under a
+common root:
+
+```{r}
+transport <- tribble(
+  ~region , ~mode , ~demand ,
+  "north" , "car" ,      35 ,
+  "north" , "bus" ,      10 ,
+  "south" , "car" ,      45 ,
+  "south" , "bus" ,      15
+)
+
+fr_transport <- transport |>
+  forest_by(region, mode)
+
+fr_total <- rbind(fr_sector, fr_transport) |>
+  summarise(demand = sum(demand))
+fr_total
+```
+
+Each `region` node now has two differently shaped subtrees, and hierarchical
+operations keep working across both.
+
+## Custom hierarchical computations with traverse()
+
+`summarise()` covers computations where each parent is a simple aggregate of
+its children. `traverse()` handles everything else: it applies a function at
+every parent-children pair, walking the forest from the leaves up. For
+example, suppose demand at each aggregation level includes 5% distribution
+losses on top of its children's total:
+
+```{r}
+fr_total |>
+  traverse(function(parent, children) {
+    parent$demand <- sum(children$demand) * 1.05
+    parent
+  })
+```
+
+Because `traverse()` walks the tree level by level, the losses compound
+naturally: regional totals include losses on losses. With `.climb = TRUE` the
+walk runs in the opposite direction, from roots to leaves, and the function
+receives `(children, parent)` -- useful for top-down allocations such as
+distributing a target or an overhead cost across children.
+
+## Back to data frames
+
+`as_tibble()` converts the root nodes of a forest back into an ordinary
+tibble:
+
+```{r}
+fr_sector |>
+  as_tibble()
+```
+
+Combined with `climb()` or `leaves()`, this lets you pull out any level of
+the hierarchy once the computation is done.
+
+## Learn more
+
+- The [function reference](https://uchidamizuki.github.io/timbr/reference/)
+  covers the remaining verbs, including `mutate()`, `select()`, `relocate()`,
+  `rows_update()`, and `rows_patch()` for forests.
+- Forests convert to tidygraph objects via `as_tbl_graph()` for
+  graph-oriented workflows.

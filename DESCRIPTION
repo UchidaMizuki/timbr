@@ -30,6 +30,7 @@ Imports:
     vctrs (>= 0.5.2)
 Suggests: 
     covr,
+    quarto,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 URL: https://github.com/UchidaMizuki/timbr,
@@ -37,3 +38,4 @@ URL: https://github.com/UchidaMizuki/timbr,
 BugReports: https://github.com/UchidaMizuki/timbr/issues
 Config/roxygen2/version: 8.0.0
 Roxygen: list(markdown = TRUE)
+Config/Needs/website: quarto

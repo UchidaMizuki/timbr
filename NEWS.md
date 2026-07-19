@@ -1,5 +1,7 @@
 # timbr (development version)
 
+* New "Introduction to timbr" article on the package website walks through creating forests, hierarchical aggregation, combining forests, and `traverse()`.
+
 # timbr 0.3.0
 
 * Fixed a bug where forests with grouped root nodes (e.g. those produced by `summarise()`) could error or behave incorrectly in downstream operations.

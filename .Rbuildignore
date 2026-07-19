@@ -11,3 +11,6 @@
 ^AGENTS\.md$
 ^\.claude$
 ^README\.qmd$
+^vignettes/articles/\.quarto$
+^vignettes/articles/*_files$
+^vignettes/articles$
