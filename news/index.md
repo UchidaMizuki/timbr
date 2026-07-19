@@ -2,6 +2,11 @@
 
 ## timbr (development version)
 
+- New “Introduction to timbr” article on the package website walks
+  through creating forests, hierarchical aggregation, combining forests,
+  and
+  [`traverse()`](https://uchidamizuki.github.io/timbr/reference/traverse.md).
+
 ## timbr 0.3.0
 
 CRAN release: 2026-07-16

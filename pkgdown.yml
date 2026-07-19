@@ -1,8 +1,9 @@
 pandoc: 3.8.3
 pkgdown: 2.2.1
 pkgdown_sha: ~
-articles: {}
-last_built: 2026-07-17T13:41Z
+articles:
+  articles/timbr: timbr.html
+last_built: 2026-07-19T02:29Z
 urls:
   reference: https://uchidamizuki.github.io/timbr/reference
   article: https://uchidamizuki.github.io/timbr/articles

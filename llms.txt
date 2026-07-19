@@ -210,3 +210,9 @@ traverse(fr_sum, function(x, children) {
 - [`traverse()`](https://uchidamizuki.github.io/timbr/reference/traverse.md)
   : Apply a function hierarchically to a forest
 
+# Articles
+
+### All vignettes
+
+- [Introduction to
+  timbr](https://uchidamizuki.github.io/timbr/articles/timbr.md):
